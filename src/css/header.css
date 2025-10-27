@@ -1,0 +1,38 @@
+.header{
+    padding: 20px;
+    border-bottom: 3px solid #0081EA;
+}
+
+.header__subcontainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header__container-logo{
+    width: 50%;
+}
+
+.header__logo{
+    width: 100%;
+    height: auto;
+}
+
+.header__icon{
+    background-color: inherit;
+    border: none;
+    margin-left: 5px;
+}
+
+.bi-list{
+    font-size: 40px;
+}
+
+.header__container-icons{
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
