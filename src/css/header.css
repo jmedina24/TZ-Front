@@ -36,3 +36,12 @@
     align-items: center;
     justify-content: flex-end;
 }
+
+.header__icon--disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.header__icon--disabled .hamburger {
+  opacity: 0.9;
+}

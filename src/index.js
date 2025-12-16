@@ -1,8 +1,9 @@
+// main.jsx (como ya lo tenés)
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router/index';
-import '../src/css/index.css'
+import '../src/css/index.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -13,4 +14,3 @@ root.render(
     <RouterProvider router={router} />
   </React.StrictMode>
 );
-

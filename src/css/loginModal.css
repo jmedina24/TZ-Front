@@ -1,0 +1,233 @@
+/* Fondo oscuro */
+.login-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: backdrop-fade 0.2s ease-out;
+}
+
+/* Caja del modal */
+.login-modal {
+  background: #ffffff;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  animation: modal-pop 0.25s ease-out;
+}
+
+/* HEADER AZUL */
+.login-modal__header {
+  background: #0d6efd;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.login-modal__title {
+  color: #ffffff;
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.login-modal__close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* FORMULARIO */
+.login-modal__form {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* F L O A T I N G   I N P U T S */
+.floating-input {
+  position: relative;
+}
+
+.floating-input__field {
+  width: 100%;
+  padding: 12px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+  background: white;
+}
+
+.floating-input__field:focus {
+  border-color: #0d6efd;
+}
+
+.floating-input__label {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #777;
+  transition: 0.2s ease;
+  background: transparent;
+}
+
+/* Cuando el input está en focus o tiene texto (gracias al placeholder=" ") */
+.floating-input__field:focus + .floating-input__label,
+.floating-input__field:not(:placeholder-shown) + .floating-input__label {
+  top: -6px;
+  left: 8px;
+  background: #ffffff;
+  padding: 0 4px;
+  font-size: 0.75rem;
+  color: #0d6efd;
+}
+
+/* Link "¿Olvidó su contraseña?" */
+.login-modal__forgot {
+  align-self: flex-end;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 0.85rem;
+  color: #0d6efd;
+  cursor: pointer;
+}
+
+.login-modal__forgot:hover {
+  text-decoration: underline;
+}
+
+/* BOTÓN ENTRAR */
+.login-modal__btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background: #0d6efd;
+  color: white;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.login-modal__btn:hover {
+  opacity: 0.9;
+}
+
+/* "¿No tienes cuenta? Crea una" */
+.login-modal__register {
+  margin: 0;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.login-modal__link-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin-left: 2px;
+  font-size: 0.9rem;
+  color: #0d6efd;
+  cursor: pointer;
+}
+
+.login-modal__link-btn:hover {
+  text-decoration: underline;
+}
+
+/* TOAST de error arriba centrado */
+.login-toast {
+  position: fixed;
+  top: 0;                     /* pegado arriba */
+  left: 0;
+  width: 100%;                /* ocupa todo el ancho */
+  padding: 14px 20px;
+  background: #dc3545;        /* rojo error */
+  color: #ffffff;
+  display: flex;
+  justify-content: center;    /* centra el texto */
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  z-index: 10001;
+  animation: toast-drop 0.25s ease-out;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+}
+
+.login-toast--error {
+  background: #dc3545; /* rojo error */
+  color: #ffffff;
+}
+
+.login-toast__icon {
+  font-size: 1.3rem;
+  color: #fff; /* blanco */
+}
+
+.login-toast--success {
+  background: #16a34a; /* verde */
+  color: #ffffff;
+}
+
+
+/* animación del toast */
+@keyframes toast-drop {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* borde rojo en los campos cuando hay error */
+.floating-input__field--error {
+  border-color: #dc3545 !important;
+}
+
+.floating-input__field--error:focus {
+  border-color: #dc3545 !important;
+}
+
+/* texto de error dentro del modal (opcional) */
+.login-modal__error-text {
+  margin: 0;
+  margin-top: -4px;
+  font-size: 0.85rem;
+  color: #dc3545;
+}
+
+
+/* A N I M A C I O N E S */
+@keyframes backdrop-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

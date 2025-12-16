@@ -1,0 +1,765 @@
+.profile-page {
+  padding: 16px;
+  background: #f4f6fb;
+  min-height: 100vh;
+}
+
+.profile-header {
+  background: #fff;
+  padding: 16px;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.profile-header-left {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.profile-avatar-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 80px;
+}
+
+.profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* recorta y llena el círculo */
+  object-position: center; /* centra el recorte */
+  display: block; /* evita espacios raros */
+}
+
+.profile-avatar-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  flex: 0 0 80px;
+}
+
+.profile-avatar-wrapper i {
+  font-size: 3rem;
+  color: #9ca3af;
+}
+
+.profile-section {
+  background: #fff;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.profile-section__header {
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  background: #f9fafb;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.profile-section__body {
+  padding: 14px;
+}
+
+.profile-section__body-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.profile-field {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.profile-label {
+  font-weight: 600;
+}
+
+.profile-button {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.profile-button--secondary {
+  background: #e5e7eb;
+  border: none;
+}
+
+.profile-button--ghost {
+  background: transparent;
+  border: 1px solid #d1d5db;
+}
+
+.profile-button--primary {
+  background: #0081ea;
+  border: none;
+  color: white;
+}
+
+/* MODAL */
+.profile-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-modal-form input {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+.profile-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.profile-subtitle {
+  font-weight: 600;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+.profile-empty {
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.profile-list-item {
+  padding: 6px 0;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.profile-list-item:last-child {
+  border-bottom: none;
+}
+
+/* TOAST (verde) */
+.tz-toast {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 20px);
+  max-width: 680px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1400;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.22);
+  animation: tzToastIn 0.18s ease-out;
+}
+
+.profile-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #eef2f7;
+  border-radius: 14px;
+  padding: 12px;
+  background: #fff;
+}
+
+.profile-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.profile-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 129, 234, 0.1);
+  color: #0081ea;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.profile-card__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.profile-icon-btn {
+  border: none;
+  background: #f3f4f6;
+  border-radius: 10px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.profile-icon-btn i {
+  margin: 0;
+}
+
+.profile-icon-btn:hover {
+  background: #e5e7eb;
+}
+
+.profile-icon-btn--danger:hover {
+  background: rgba(239, 68, 68, 0.14);
+}
+
+.profile-card__line {
+  color: #374151;
+  font-size: 0.92rem;
+  margin-bottom: 4px;
+}
+
+.profile-card__line strong {
+  color: #111827;
+}
+
+.card-preview {
+  width: 100%;
+  height: 190px;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 16px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+}
+
+.card-preview--visa {
+  background: linear-gradient(135deg, #1434cb, #1a1f71);
+}
+
+.card-preview--mastercard {
+  background: linear-gradient(135deg, #000000, #444);
+}
+
+.card-preview--amex {
+  background: linear-gradient(135deg, #2e77bb, #1c3f66);
+}
+
+.card-preview__top img {
+  width: 60px;
+}
+
+.card-preview__number {
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  margin: 12px 0;
+}
+
+.card-preview__footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+
+.card-preview__footer span {
+  opacity: 0.8;
+}
+
+.card-preview__footer strong {
+  display: block;
+  font-size: 0.85rem;
+}
+
+.profile-card {
+  position: relative;
+}
+
+.profile-card--expired {
+  opacity: 0.65;
+  filter: grayscale(0.2);
+}
+
+.profile-card__ribbon {
+  position: absolute;
+  top: 10px;
+  left: -8px;
+  background: #dc2626;
+  color: #fff;
+  padding: 6px 10px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  border-radius: 10px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+}
+
+/* Toast error */
+.tz-toast--error {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+/* Card vencida */
+.profile-card--expired {
+  opacity: 0.7;
+  filter: grayscale(0.35);
+  position: relative;
+}
+
+/* Franja roja "Tarjeta vencida" */
+.profile-card__ribbon {
+  position: absolute;
+  top: 10px;
+  left: -32px;
+  transform: rotate(-12deg);
+  background: #dc2626;
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  z-index: 2;
+  letter-spacing: 0.6px;
+}
+
+.profile-card--expired {
+  pointer-events: none;
+  opacity: 0.65;
+  filter: grayscale(0.4);
+}
+
+/* PERMITIMOS SOLO EL BOTÓN ELIMINAR */
+.profile-card--expired .profile-icon-btn--danger {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.tz-toast--warning {
+  background: #f59e0b; /* ámbar */
+  color: #ffffff;
+}
+
+.tz-toast--error {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+/* Card vencida: se ve deshabilitada */
+.profile-card--expired {
+  opacity: 0.65;
+  filter: grayscale(1);
+  pointer-events: none; /* bloquea clicks dentro */
+  position: relative;
+}
+
+/* pero permitimos el botón eliminar */
+.profile-card--expired .profile-icon-btn--danger {
+  pointer-events: auto;
+}
+
+/* Franja roja */
+.profile-card__ribbon {
+  position: absolute;
+  top: 10px;
+  right: -40px;
+  transform: rotate(35deg);
+  background: #dc2626;
+  color: #fff;
+  padding: 6px 50px;
+  font-weight: 700;
+  font-size: 12px;
+  z-index: 2;
+}
+
+/* Toast types */
+.tz-toast--success {
+  background: #16a34a;
+  color: #fff;
+}
+.tz-toast--error {
+  background: #dc2626;
+  color: #fff;
+}
+.tz-toast--warning {
+  background: #f59e0b;
+  color: #fff;
+}
+
+.profile-chip--brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-chip__logo {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+.profile-chip__text {
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.profile-card {
+  position: relative;
+  overflow: hidden; /* CLAVE para que no salga de la card */
+}
+
+/* cinta */
+.profile-card__ribbon {
+  position: absolute;
+  top: 14px;
+  left: -48px;
+
+  width: 180px;
+  text-align: center;
+
+  background: transparent;
+  color: #d32f2f; /* rojo */
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.6px;
+
+  border-top: 2px solid #d32f2f;
+  border-bottom: 2px solid #d32f2f;
+
+  padding: 4px 0;
+
+  transform: rotate(-45deg);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.profile-card--expired {
+  opacity: 0.75;
+}
+
+.profile-card--expired {
+  filter: grayscale(0.4);
+}
+
+.profile-button--danger {
+  background: #dc3545;
+  color: #fff;
+  border: 1px solid #dc3545;
+}
+.profile-button--danger:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@keyframes tzToastIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.tz-toast--success {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.tz-toast__icon {
+  font-size: 1.2rem;
+}
+
+.tz-toast__text {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* SECCIÓN ACTIVA: borde azul */
+.profile-section {
+  border: 1px solid transparent;
+}
+
+.profile-section--active {
+  border-color: #0081ea;
+}
+
+/* Header activo: fondo azul + letras blancas */
+.profile-section__header--active {
+  background: #0081ea;
+  color: #ffffff;
+}
+
+/* Que los íconos también queden blancos cuando está activo */
+.profile-section__header--active i {
+  color: #ffffff;
+}
+
+/* Hover (solo el header) para que se sienta interactivo */
+.profile-section__header:hover {
+  filter: brightness(0.98);
+}
+
+/* Modal: fields en columna, full width */
+.profile-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.profile-modal-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+/* Input full width */
+.profile-modal-input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  color: #111827;
+  background: #ffffff;
+}
+
+/* Focus azul TechZone */
+.profile-modal-input:focus {
+  outline: none;
+  border-color: #0081ea;
+  box-shadow: 0 0 0 3px rgba(0, 129, 234, 0.18);
+}
+
+/* Opcional: si querés que el input se vea mejor en mobile */
+.profile-modal-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Avatar editable */
+.profile-avatar-editable {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Overlay ícono */
+.profile-avatar-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  background: #0081ea;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.profile-avatar-overlay i {
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.profile-avatar-overlay:active {
+  transform: scale(0.95);
+}
+
+/* Hover sutil (desktop) */
+.profile-avatar-editable:hover .profile-avatar-overlay {
+  transform: scale(1.05);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.32);
+}
+
+/* Placeholder icon */
+.profile-avatar-placeholder {
+  font-size: 3rem;
+  color: #9ca3af;
+}
+
+.profile-avatar-loading {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.profile-avatar-loading i {
+  font-size: 1.4rem;
+  animation: spin 0.9s linear infinite;
+}
+
+.profile-card__text {
+  font-size: 0.9rem;
+  color: #374151;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.profile-security-cards{
+  display: flex;
+  flex-direction: column;
+  gap: 18px; 
+}
+
+.profile-security-cards .profile-card + .profile-card{
+  margin-top: 6px;
+}
+
+.profile-security-separator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #999;
+  font-size: 13px;
+  margin: 4px 0;
+}
+
+.profile-security-separator::before,
+.profile-security-separator::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(0,0,0,0.08);
+}
+
+/* ===== ResetPassword modern form ===== */
+.tz-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.tz-field {
+  position: relative;
+  display: grid;
+  gap: 6px;
+}
+
+.tz-input {
+  width: 100%;
+  height: 46px;
+  padding: 14px 12px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: inherit;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+/* borde azul al focus */
+.tz-input:focus {
+  border-color: #0081EA;
+  box-shadow: 0 0 0 3px rgba(45, 125, 255, 0.22);
+  background: rgba(255,255,255,0.08);
+}
+
+/* label flotante */
+.tz-label {
+  position: absolute;
+  left: 12px;
+  top: 13px;
+  font-size: 14px;
+  opacity: 0.75;
+  pointer-events: none;
+  transition: transform 0.15s ease, opacity 0.15s ease, top 0.15s ease, font-size 0.15s ease;
+}
+
+/* input con placeholder=" " permite :placeholder-shown */
+.tz-input:focus + .tz-label,
+.tz-input:not(:placeholder-shown) + .tz-label {
+  top: 6px;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* helper text */
+.tz-hint {
+  font-size: 12px;
+  opacity: 0.65;
+  margin-left: 2px;
+}
+
+.tz-error {
+  font-size: 13px;
+  color: #ff5a5a;
+  background: rgba(255, 90, 90, 0.10);
+  border: 1px solid rgba(255, 90, 90, 0.20);
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+
+/* botón mismo ancho que inputs, azul */
+.tz-btn-primary {
+  width: 100%;
+  height: 46px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: #0081EA;
+  color: #fff;
+  font-weight: 600;
+  transition: transform 0.1s ease, opacity 0.15s ease;
+}
+
+.profile-header-email {
+  max-width: 100%;
+  font-size: 0.9rem;
+  color: #6b7280;
+
+  white-space: nowrap;       /* una sola línea */
+  overflow: hidden;          /* oculta el excedente */
+  text-overflow: ellipsis;   /* ... */
+}
+
+.tz-btn-primary:active {
+  transform: translateY(1px);
+}
+
+.tz-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

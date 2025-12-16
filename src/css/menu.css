@@ -1,119 +1,281 @@
+/* ===========================
+   CONTENEDOR PRINCIPAL MENÚ
+   =========================== */
+
 .menu {
   position: fixed;
   top: 0;
   right: -100%;
   width: 100%;
   height: 100vh;
-  background-color: white;
-  box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+  background-color: #ffffff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
   transition: right 0.3s ease;
-  z-index: 1000;
+  z-index: 900;
   overflow-y: auto;
 }
 
 .menu.open {
-  right: 0;   
+  right: 0;
+}
+
+/* ===========================
+   ZONA SUPERIOR: BACK + CUENTA
+   =========================== */
+
+.menu__container-top {
+  display: flex;
+  align-items: flex-start;
+  padding: 8px 12px;
+  gap: 8px;
+  border-bottom: 3px solid #0081ea;
+}
+
+/* Contenedor fijo para la flecha, pegada al borde izquierdo */
+.menu__back-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.menu__back-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #333;
+  padding: 6px 6px 6px 0;
+  border-radius: 8px;
+}
+
+.menu__back-btn:hover {
+  background: #e6e6e6;
+}
+
+/* El contenedor del botón de cuenta debe ser relativo */
+.menu__account-relative {
+  position: relative;
+}
+
+/* Columna de cuenta: botón + dropdown (mismo ancho) */
+.menu__account-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Botón de cuenta en línea, ocupa el ancho de la columna */
+.menu__account-inline {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: #f5f5f5;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.menu__account-inline:hover {
+  background: #0081ea;
+  color: #ffffff;
+}
+
+/* Avatar dentro del botón de cuenta */
+.menu__account-photo,
+.menu__container-user-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Textos de cuenta */
+.menu__account-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  align-items: flex-start;
+}
+
+.menu__account-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.menu__account-subtitle {
+  font-size: 0.8rem;
+  color: #666666;
+}
+
+/* Flecha de la cuenta */
+.menu__account-arrow {
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Íconos base */
+.bi-arrow-left {
+  font-size: 25px;
+}
+
+.bi-person-circle {
+  font-size: 30px;
+}
+
+/* ===========================
+   DROPDOWN DE CUENTA
+   =========================== */
+
+.menu__account-dropdown {
+  position: absolute;
+  top: 100%; /* justo debajo del botón */
+  left: 0;
+  width: 100%;
+
+  background: #0b1120;
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+  z-index: 999; /* se superpone al menú */
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  /* Animación */
+  animation: menuDropdownIn 0.18s ease-out;
+  transform-origin: top;
+}
+
+.menu__account-option {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.menu__account-option:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Animación slide + fade del dropdown */
+@keyframes menuDropdownIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px) scaleY(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+/* ===========================
+   LISTA DE OPCIONES DEL MENÚ
+   =========================== */
+
+.menu__container-bottom {
+  padding: 10px;
+}
+
+.menu__container-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.menu__btn,
+.menu__social {
+  margin-top: 5px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
 }
 
 .menu__btn i {
   margin-right: 8px;
 }
 
+.bi {
+  margin: 0 10px;
+  color: black;
+}
+
+.menu__btn:hover {
+  background-color: #0081ea;
+  color: white;
+  padding: 10px 0;
+  border-radius: 25px;
+}
+
+/* ===========================
+   SOCIAL FOOTER
+   =========================== */
+
 .menu__container-social {
+  height: 65px;
+  width: 100%;
+  border-top: 3px solid #0081ea;
+  position: fixed;
+  bottom: 0;
+  left: 0;
   display: flex;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
   gap: 12px;
-  padding: 1rem 0;
+  background: #ffffff;
 }
 
-.menu__container-top{
-    height: 100px;
-    padding: 15px 0px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 3px solid #0081EA;
+/* ===========================
+   COSAS HEREDADAS / UTILITARIAS
+   =========================== */
+
+.menu__container-user-info {
+  /* ya no se usa como antes, pero lo dejamos neutro por si se reaprovecha */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
 }
 
-.bi-arrow-left{
-    font-size: 25px;
+.menu__user-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1;
 }
 
-.menu__container-user-info{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+.menu__container-arrows {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1;
 }
 
-.bi-person-circle{
-    font-size: 30px;
+.bi-caret-up {
+  display: none;
 }
-
-.menu__user-name{
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 500;
-    line-height: 1;
-}
-
-.bi-caret-up{
-    display: none;
-}
-
-.menu__container-arrows{
-    margin: 0;
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 1;
-}
-
-.menu__container-list{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-.menu__btn,
-.menu__social{
-    margin-top: 5px;
-    text-decoration: none;
-    font-size: 18px;
-    color: black;
-}
-
-.bi{
-    margin: 0 10px;
-    color: black;
-}
-
-
-.menu__btn:hover{
-    background-color: #0081EA;
-    color: white;
-    padding: 10px 0;
-    border-radius: 25px;
-}
-
-
-.menu__container-bottom{
-    padding: 10px;
-    
-}
-
-.menu__container-social{
-    height: 65px;
-    width: 100%;
-    border-top: 3px solid #0081EA;
-    position: fixed;
-    bottom: 0px;
-    margin-top: auto;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-}
-
-
