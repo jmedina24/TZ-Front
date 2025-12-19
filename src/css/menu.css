@@ -1,40 +1,55 @@
 /* ===========================
-   CONTENEDOR PRINCIPAL MENÚ
-   =========================== */
-
-.menu {
-  position: fixed;
-  top: 0;
-  right: -100%;
-  width: 100%;
-  height: 100vh;
-  background-color: #ffffff;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
-  transition: right 0.3s ease;
-  z-index: 900;
-  overflow-y: auto;
-}
-
-.menu.open {
-  right: 0;
+   RESET BÁSICO
+=========================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 /* ===========================
-   ZONA SUPERIOR: BACK + CUENTA
-   =========================== */
-
-.menu__container-top {
-  display: flex;
-  align-items: flex-start;
-  padding: 8px 12px;
-  gap: 8px;
-  border-bottom: 3px solid #0081ea;
+   OVERLAY
+=========================== */
+.menu__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  z-index: 899;
 }
 
-/* Contenedor fijo para la flecha, pegada al borde izquierdo */
-.menu__back-wrapper {
+/* ===========================
+   CONTENEDOR MENÚ
+=========================== */
+.menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -2px 0 5px rgba(0,0,0,.2);
+  z-index: 900;
+
+  transform: translateX(100%);
+  transition: transform .25s ease;
+
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  overflow: hidden; /* CLAVE */
+}
+
+.menu.open {
+  transform: translateX(0);
+}
+
+/* ===========================
+   TOP (BACK + CUENTA)
+=========================== */
+.menu__container-top {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 3px solid #0081ea;
 }
 
 .menu__back-btn {
@@ -42,58 +57,42 @@
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #333;
-  padding: 6px 6px 6px 0;
+  padding: 6px;
   border-radius: 8px;
 }
+.menu__back-btn:hover { background: #e6e6e6; }
 
-.menu__back-btn:hover {
-  background: #e6e6e6;
-}
-
-/* El contenedor del botón de cuenta debe ser relativo */
-.menu__account-relative {
-  position: relative;
-}
-
-/* Columna de cuenta: botón + dropdown (mismo ancho) */
 .menu__account-column {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  position: relative;
 }
 
-/* Botón de cuenta en línea, ocupa el ancho de la columna */
 .menu__account-inline {
-  width: 100%;
   display: flex;
   align-items: center;
   gap: 10px;
-  border: none;
-  background: #f5f5f5;
   padding: 10px 12px;
   border-radius: 10px;
+  border: none;
+  background: #f5f5f5;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
 }
-
 .menu__account-inline:hover {
   background: #0081ea;
-  color: #ffffff;
+  color: #fff;
 }
 
-/* Avatar dentro del botón de cuenta */
-.menu__account-photo,
-.menu__container-user-photo {
+.menu__account-photo {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  overflow: hidden;
   background: #e0e0e0;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .menu__avatar-img {
@@ -102,180 +101,368 @@
   object-fit: cover;
 }
 
-/* Textos de cuenta */
 .menu__account-text {
   flex: 1;
   display: flex;
   flex-direction: column;
-  text-align: left;
-  align-items: flex-start;
 }
 
 .menu__account-title {
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: .95rem;
 }
-
 .menu__account-subtitle {
-  font-size: 0.8rem;
-  color: #666666;
+  font-size: .8rem;
+  color: #666;
 }
 
-/* Flecha de la cuenta */
-.menu__account-arrow {
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Íconos base */
-.bi-arrow-left {
-  font-size: 25px;
-}
-
-.bi-person-circle {
-  font-size: 30px;
-}
-
-/* ===========================
-   DROPDOWN DE CUENTA
-   =========================== */
-
+/* Dropdown cuenta */
 .menu__account-dropdown {
   position: absolute;
-  top: 100%; /* justo debajo del botón */
+  top: 100%;
   left: 0;
   width: 100%;
-
   background: #0b1120;
-  color: #ffffff;
+  color: #fff;
   border-radius: 10px;
   padding: 6px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
-  z-index: 999; /* se superpone al menú */
-
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-
-  /* Animación */
-  animation: menuDropdownIn 0.18s ease-out;
-  transform-origin: top;
+  margin-top: 4px;
+  z-index: 999;
 }
-
 .menu__account-option {
-  width: 100%;
-  text-align: left;
+  background: transparent;
+  border: none;
+  color: #fff;
   padding: 8px 10px;
   border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+}
+.menu__account-option:hover {
+  background: rgba(255,255,255,.08);
+}
+
+/* ===========================
+   PANELS SLIDER
+=========================== */
+.menu__panels {
+  flex: 1;
+  overflow: hidden;
+}
+
+.menu__panels-track {
+  display: flex;
+  height: 100%;
+  transition: transform .25s ease;
+  will-change: transform;
+}
+
+.menu__panel {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+}
+
+.menu__panel-scroll {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 10px 10px 80px;
+}
+
+/* ===========================
+   SECCIONES / BOTONES
+=========================== */
+
+.menu__accordion-btn{
+  width: 100%;
+  padding: 5px;
+  border-radius: 25px;
+  border: 2px solid #0081ea;
+  background: inherit;
+}
+
+.menu__section-title {
+  margin: 14px 6px 8px;
+  font-size: .95rem;
+  font-weight: 700;
+}
+
+.menu__divider {
+  height: 1px;
+  background: #e9e9e9;
+  margin: 12px 6px;
+}
+
+.menu__btn {
+  margin-top: 6px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 14px;
   border: none;
   background: transparent;
-  color: #ffffff;
-  font-size: 0.9rem;
+  font-size: 16px;
+  color: #111;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.menu__account-option:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-/* Animación slide + fade del dropdown */
-@keyframes menuDropdownIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-4px) scaleY(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scaleY(1);
-  }
-}
-
-/* ===========================
-   LISTA DE OPCIONES DEL MENÚ
-   =========================== */
-
-.menu__container-bottom {
-  padding: 10px;
-}
-
-.menu__container-list {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.menu__btn,
-.menu__social {
-  margin-top: 5px;
   text-decoration: none;
-  font-size: 18px;
-  color: black;
 }
-
-.menu__btn i {
-  margin-right: 8px;
-}
-
-.bi {
-  margin: 0 10px;
-  color: black;
-}
-
 .menu__btn:hover {
-  background-color: #0081ea;
-  color: white;
-  padding: 10px 0;
-  border-radius: 25px;
+  background: #0081ea;
+  color: #fff;
+}
+
+.menu__btn--active {
+  background: rgba(0,129,234,.12);
+  color: #0081ea;
+  font-weight: 600;
+}
+
+.menu__btn--sub {
+  padding-left: 16px;
+}
+
+.menu__rightchev {
+  margin-left: auto;
+  opacity: .7;
+}
+
+.bi { 
+  color: inherit;
+
+}
+
+.msearch__clear{
+  border: none;
+  color: inherit;
 }
 
 /* ===========================
-   SOCIAL FOOTER
-   =========================== */
-
+   FOOTER SOCIAL
+=========================== */
 .menu__container-social {
-  height: 65px;
-  width: 100%;
-  border-top: 3px solid #0081ea;
-  position: fixed;
+  position: sticky;
   bottom: 0;
-  left: 0;
+  height: 65px;
+  border-top: 3px solid #0081ea;
   display: flex;
-  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+}
+
+.menu__social {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #f2f6fb;
+  color: #0081ea;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  background: #ffffff;
+}
+.menu__social:hover {
+  background: #0081ea;
+  color: #fff;
 }
 
 /* ===========================
-   COSAS HEREDADAS / UTILITARIAS
-   =========================== */
+   LIVE SEARCH
+=========================== */
+.msearch {
+  width: 100%;
+}
 
-.menu__container-user-info {
-  /* ya no se usa como antes, pero lo dejamos neutro por si se reaprovecha */
+.msearch__bar {
   display: flex;
-  flex-direction: row;
   align-items: center;
+  gap: 8px;
+  background: #f5f5f5;
+  padding: 10px 12px;
+  border-radius: 14px;
+}
+
+.msearch__input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 16px;
+}
+
+.msearch__list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
-.menu__user-name {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1;
+/* ===========================
+   ITEM BUSCADOR
+=========================== */
+.msearch__item {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 14px;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+}
+.msearch__item:hover {
+  background: rgba(0,129,234,.08);
 }
 
-.menu__container-arrows {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 1;
+/* Estado agotado */
+.msearch__item--out {
+  opacity: .7;
+  cursor: not-allowed;
 }
 
-.bi-caret-up {
-  display: none;
+/* Miniatura */
+.msearch__thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+  flex: 0 0 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.msearch__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Texto */
+.msearch__mid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.msearch__name {
+  font-weight: 800;
+  font-size: 14px;
+}
+.msearch__cat {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Precios */
+.msearch__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.msearch__discount {
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(0,129,234,.12);
+  color: #0081ea;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.msearch__price-old {
+  font-size: 12px;
+  text-decoration: line-through;
+  color: #999;
+}
+
+.msearch__price-final {
+  font-size: 14px;
+  font-weight: 900;
+  color: #dc2626;
+}
+
+/* Blink */
+@keyframes blinkPrice {
+  0%,100% { opacity: 1; }
+  50% { opacity: .4; }
+}
+.msearch__price-final--blink {
+  animation: blinkPrice 1.6s infinite;
+}
+
+/* ===========================
+   CINTA AGOTADO (FINAL)
+=========================== */
+.msearch__ribbon {
+  position: absolute;
+  top: 14px;
+  left: -48px;
+  width: 160px;
+  text-align: center;
+
+  background: transparent;
+  color: #dc2626;
+  border-top: 2px solid #dc2626;
+  border-bottom: 2px solid #dc2626;
+
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: .6px;
+  padding: 4px 0;
+
+  transform: rotate(-45deg);
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* ===========================
+   BOTÓN "VER TODOS LOS RESULTADOS"
+=========================== */
+.msearch__seeall {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px 16px;
+
+  border: none;
+  border-radius: 18px;
+
+  background: #0b1120; /* oscuro como en la foto */
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.msearch__seeall i {
+  font-size: 16px;
+}
+
+.msearch__seeall:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.msearch__seeall:active {
+  transform: translateY(0);
+}
+
+.msearch__seeall:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }

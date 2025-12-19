@@ -5,6 +5,7 @@ import RootLayout from "../layout/RootLayout";
 import Home from "../pages/Home";
 import Profile from "../pages/Profile";
 import ResetPassword from "../pages/ResetPassword";
+import ProductDetail from "../pages/ProductDetail";
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ export const router = createBrowserRouter([
         path: "reset-password/:token",
         element: <ResetPassword />,
       },
+      {
+        path: "/producto/:id",
+        element: <ProductDetail />
+      }
     ],
   },
 ]);

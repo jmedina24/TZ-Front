@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
 import EditModal from "../subComponents/EditModal";
 import CardPreview from "../subComponents/CardPreview";
@@ -34,18 +34,25 @@ const Profile = () => {
     type: "success", // success | error | warning
   });
 
-  const showToast = (msg, type = "success") => {
-    setToast({ show: true, msg, type });
-    clearTimeout(window.__tz_toast);
-    window.__tz_toast = setTimeout(() => {
-      setToast({ show: false, msg: "", type: "success" });
-    }, 2500);
-  };
+  const showToast = useCallback((msg, type = "success") => {
+  setToast({ show: true, msg, type });
+  clearTimeout(window.__tz_toast);
+  window.__tz_toast = setTimeout(() => {
+    setToast({ show: false, msg: "", type: "success" });
+  }, 2500);
+}, []);
 
-  const showSuccessToast = (msg = "Datos actualizados") =>
-    showToast(msg, "success");
-  const showErrorToast = (msg = "Ocurrió un error") => showToast(msg, "error");
-  const showWarningToast = (msg = "Atención") => showToast(msg, "warning");
+  const showSuccessToast = useCallback((msg = "Datos actualizados") => {
+  showToast(msg, "success");
+}, [showToast]);
+
+const showErrorToast = useCallback((msg = "Ocurrió un error") => {
+  showToast(msg, "error");
+}, [showToast]);
+
+const showWarningToast = useCallback((msg = "Atención") => {
+  showToast(msg, "warning");
+}, [showToast]);
 
   // Upload avatar
   const [isUploading, setIsUploading] = useState(false);
@@ -1285,7 +1292,9 @@ const Profile = () => {
                       aria-disabled={expired ? "true" : "false"}
                     >
                       {expired && (
-                        <div className="profile-card__ribbon">VENCIDA</div>
+                        <div className="profile-card__ribbon">
+                          <span>VENCIDA</span>
+                        </div>
                       )}
 
                       <div className="profile-card__top">
