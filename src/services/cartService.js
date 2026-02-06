@@ -42,7 +42,7 @@ async function apiFetch(path, { method = "GET", body } = {}) {
     method,
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: token } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: body ? JSON.stringify(body) : undefined,
   });

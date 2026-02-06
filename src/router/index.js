@@ -6,19 +6,31 @@ import Home from "../pages/Home";
 import Profile from "../pages/Profile";
 import ResetPassword from "../pages/ResetPassword";
 import ProductDetail from "../pages/ProductDetail";
+import FavoritesPage from "../pages/FavoritesPage"; // 👈 NUEVO
+import CartPage from "../pages/CartPage";
+import CheckoutPage from "../pages/CheckoutPage";
+import CheckoutPayPage from "../pages/CheckoutPayPage";
+import CheckoutSuccessPage from "../pages/CheckoutSuccessPage";
+import MyPurchasesPage from "../pages/MyPurchasesPage";
+import PurchaseDetailPage from "../pages/PurchaseDetailPage";
+import CategoryPage from "../pages/CategoryPage";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootLayout />, // ⬅️ nuestro layout con Header/Menu/Login
+    element: <RootLayout />, // ⬅️ layout con Header/Menu/Login
     children: [
       {
-        index: true, // equivale a path: "/"
+        index: true,
         element: <Home />,
       },
       {
         path: "perfil",
         element: <Profile />,
+      },
+      {
+        path: "favoritos",          // 👈 NUEVA RUTA FRONT
+        element: <FavoritesPage />,
       },
       // 🔐 RESET PASSWORD (PÚBLICA)
       {
@@ -26,9 +38,37 @@ export const router = createBrowserRouter([
         element: <ResetPassword />,
       },
       {
-        path: "/producto/:id",
-        element: <ProductDetail />
-      }
+        path: "producto/:id",
+        element: <ProductDetail />,
+      },
+      {
+        path: "carrito",
+        element: <CartPage />,
+      },
+      {
+        path: "checkout",
+        element: <CheckoutPage />,
+      },
+      {
+        path: "checkout/pago",
+        element: <CheckoutPayPage />,
+      },
+      {
+        path: "checkout/confirmacion/:id",
+        element: <CheckoutSuccessPage />,
+      },
+      {
+        path: "mis-compras",
+        element: <MyPurchasesPage />,
+      },
+      {
+        path: "mis-compras/:id",
+        element: <PurchaseDetailPage />,
+      },
+      {
+        path: "categorias/:categoryId",
+        element: <CategoryPage />,
+      },
     ],
   },
 ]);

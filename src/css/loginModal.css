@@ -1,3 +1,10 @@
+/* =========================================================
+   loginModal.css (ACTUALIZADO)
+   - Arregla colores de fortaleza (Register usando rpw-*)
+   - Tooltip/Popover no se corta (altura/overflow + padding dinámico)
+   - Mantiene tu diseño actual (no rompe Login)
+========================================================= */
+
 /* Fondo oscuro */
 .login-modal__backdrop {
   position: fixed;
@@ -19,6 +26,11 @@
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0,0,0,0.25);
   animation: modal-pop 0.25s ease-out;
+
+  /* ✅ clave: que si el contenido crece, el modal se adapte y scrollee */
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 48px);
 }
 
 /* HEADER AZUL */
@@ -50,9 +62,16 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+
+  /* ✅ permite que el modal haga scroll si crece */
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
 }
 
-/* F L O A T I N G   I N P U T S */
+/* =========================================================
+   FLOATING INPUTS
+========================================================= */
 .floating-input {
   position: relative;
 }
@@ -65,6 +84,7 @@
   font-size: 1rem;
   outline: none;
   background: white;
+  height: 46px; /* ✅ consistente con ChangePassword */
 }
 
 .floating-input__field:focus {
@@ -82,7 +102,7 @@
   background: transparent;
 }
 
-/* Cuando el input está en focus o tiene texto (gracias al placeholder=" ") */
+/* Cuando el input está en focus o tiene texto */
 .floating-input__field:focus + .floating-input__label,
 .floating-input__field:not(:placeholder-shown) + .floating-input__label {
   top: -6px;
@@ -108,7 +128,7 @@
   text-decoration: underline;
 }
 
-/* BOTÓN ENTRAR */
+/* BOTÓN */
 .login-modal__btn {
   width: 100%;
   padding: 10px;
@@ -146,17 +166,17 @@
   text-decoration: underline;
 }
 
-/* TOAST de error arriba centrado */
+/* TOAST */
 .login-toast {
   position: fixed;
-  top: 0;                     /* pegado arriba */
+  top: 0;
   left: 0;
-  width: 100%;                /* ocupa todo el ancho */
+  width: 100%;
   padding: 14px 20px;
-  background: #dc3545;        /* rojo error */
+  background: #dc3545;
   color: #ffffff;
   display: flex;
-  justify-content: center;    /* centra el texto */
+  justify-content: center;
   align-items: center;
   gap: 10px;
   font-size: 1rem;
@@ -166,31 +186,18 @@
 }
 
 .login-toast--error {
-  background: #dc3545; /* rojo error */
+  background: #dc3545;
   color: #ffffff;
-}
-
-.login-toast__icon {
-  font-size: 1.3rem;
-  color: #fff; /* blanco */
 }
 
 .login-toast--success {
-  background: #16a34a; /* verde */
+  background: #16a34a;
   color: #ffffff;
 }
 
-
-/* animación del toast */
 @keyframes toast-drop {
-  from {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
 }
 
 /* borde rojo en los campos cuando hay error */
@@ -202,7 +209,7 @@
   border-color: #dc3545 !important;
 }
 
-/* texto de error dentro del modal (opcional) */
+/* texto de error */
 .login-modal__error-text {
   margin: 0;
   margin-top: -4px;
@@ -210,24 +217,208 @@
   color: #dc3545;
 }
 
-
-/* A N I M A C I O N E S */
+/* ANIMACIONES */
 @keyframes backdrop-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @keyframes modal-pop {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+  from { opacity: 0; transform: scale(0.9) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Fix floating label para input date */
+.floating-input__field--date:focus + .floating-input__label,
+.floating-input__field--date:valid + .floating-input__label {
+  top: -6px;
+  left: 8px;
+  background: #ffffff;
+  padding: 0 4px;
+  font-size: 0.75rem;
+  color: #0d6efd;
+}
+
+/* =========================================================
+   PASSWORD: Toggle/Info viejo (lo dejamos por compatibilidad)
+========================================================= */
+.floating-input--with-toggle .floating-input__field {
+  padding-right: 44px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #666;
+  padding: 6px;
+  line-height: 1;
+}
+
+.password-toggle:hover { color: #0d6efd; }
+
+.password-info {
+  position: absolute;
+  top: 50%;
+  right: 44px;
+  transform: translateY(-50%);
+  color: #777;
+  cursor: pointer;
+  padding: 6px;
+  line-height: 1;
+  border: none;
+  background: transparent;
+}
+
+.password-info:hover { color: #0d6efd; }
+
+/* Tooltip viejo (si queda algún uso) */
+.password-tooltip {
+  position: absolute;
+  right: 10px;
+  top: calc(100% + 8px);
+  width: 100%;
+  max-width: 320px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  padding: 10px 12px;
+  z-index: 10002;
+}
+
+/* =========================================================
+   ✅ CHANGE PASSWORD / REGISTER (lpw-)
+   - Iconos anclados al input (NO bajan cuando aparece fortaleza)
+========================================================= */
+.floating-input.lpw-field {
+  position: relative;
+}
+
+/* espacio a la derecha para 2 iconos */
+.floating-input.lpw-field .floating-input__field {
+  padding-right: 96px;
+}
+
+/* 2 iconos */
+.floating-input.lpw-field .lpw-icons {
+  position: absolute;
+  right: 12px;
+  top: 0;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 6;
+}
+
+.floating-input.lpw-field .lpw-icon-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  line-height: 1;
+  font-size: 1.15rem;
+  color: #0d6efd;
+}
+
+.floating-input.lpw-field .lpw-icon-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* overlay click afuera */
+.lpw-overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  z-index: 10020;
+}
+
+/* popover requisitos: mini modal */
+.lpw-popover {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 10px);
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.12);
+  box-shadow: 0 14px 30px rgba(0,0,0,.16);
+  border-radius: 14px;
+  padding: 14px 16px;
+  z-index: 10030;
+}
+
+.lpw-popover__title {
+  margin: 0 0 10px 0;
+  font-weight: 800;
+  color: #111827;
+}
+
+.lpw-popover__list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.lpw-popover__list li {
+  margin: 5px 0;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.lpw-popover__list li.ok {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+/* =========================================================
+   ✅ Fortaleza NUEVA estilo ChangePassword para Register
+   (rpw-*)  -> esto arregla tu "no funciona colores"
+========================================================= */
+.rpw-strength {
+  margin-top: 10px;
+  min-height: 28px;
+}
+
+.rpw-bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.rpw-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.2s ease;
+}
+
+/* colores (3 niveles como ChangePassword) */
+.rpw-fill--weak  { background: #dc3545; } /* rojo */
+.rpw-fill--mid   { background: #f59e0b; } /* ámbar */
+.rpw-fill--strong{ background: #16a34a; } /* verde */
+
+.rpw-meta {
+  margin: 6px 0 0 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* =========================================================
+   ✅ Evitar que el popover se corte:
+   - el form scrollea (overflow:auto)
+   - y cuando abrís el popover, agregás padding bottom
+   Para esto: en React, cuando showPwInfo === true,
+   agregá "login-modal__form--popover" al form.
+========================================================= */
+.login-modal__form--popover {
+  padding-bottom: 240px; /* ajustá 200-280 si querés */
 }

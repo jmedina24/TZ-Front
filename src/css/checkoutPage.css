@@ -1,0 +1,169 @@
+.coPage {
+  padding: 12px 0;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* HEADER */
+.coHead {
+  padding: 0 12px;
+}
+.coHead__title {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+.coHead__sub {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* CARD */
+.coCard {
+  margin: 12px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid rgba(15,23,42,.08);
+}
+
+/* TÍTULO AZUL */
+.coCard__title--bar {
+  margin: 0;
+  padding: 10px 12px;
+  background: rgba(0,129,234,.10);
+  color: #0081EA;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 14px 14px 0 0;
+}
+
+/* ADDR */
+.coAddrList {
+  padding: 12px;
+  display: grid;
+  gap: 12px;
+}
+.coAddr {
+  display: flex;
+  gap: 10px;
+}
+.coAddr__ref {
+  font-weight: 500;
+}
+.coAddr__line {
+  font-size: .9rem;
+}
+.coAddr__line--muted {
+  color:#64748b;
+}
+
+/* ACTION LINK */
+.coActionLink {
+  margin: 12px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 0;
+  color: #0081EA;
+  font-size: .9rem;
+  cursor: pointer;
+}
+
+/* MINI RESUMEN */
+.coMiniList {
+  padding: 12px;
+  display: grid;
+  gap: 18px;
+}
+.coMiniItem {
+  display: flex;
+  gap: 12px;
+  border-bottom: 1px solid rgba(15,23,42,.06);
+  padding-bottom: 12px;
+}
+.coMiniItem:last-child {
+  border-bottom: 0;
+}
+.coMiniItem__img {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+}
+.coMiniItem__title {
+  font-size: .92rem;
+  font-weight: 500;
+}
+.coMiniItem__meta,
+.coMiniItem__lineTotal {
+  font-size: .85rem;
+  color: #64748b;
+  display: flex;
+  gap: 6px;
+}
+.coMiniItem__lineTotal span:last-child {
+  color:#0f172a;
+  font-weight: 500;
+}
+
+/* BREAKDOWN */
+.coBreakdown {
+  padding: 12px;
+}
+.coRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: .9rem;
+  margin-bottom: 8px;
+}
+.coTotalRow {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,129,234,.5);
+  background: rgba(0,129,234,.10);
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+/* CTA */
+.coActions {
+  padding: 0 12px 16px;
+}
+.coBtn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,129,234,.4);
+  background: #fff;
+  color: #0081EA;
+  font-weight: 500;
+}
+.coBtn--primary {
+  background: #0081EA;
+  color: #fff;
+}
+
+.coBtn--secondary {
+  margin-top: 8px;
+  background: #fff;
+  color: #64748b;
+  border: 1px solid rgba(15, 23, 42, 0.15);
+}
+
+/* Descuento en rojo suave */
+.coRow--discount .coLabel {
+  color: #f87171;   /* rojo suave */
+  font-weight: 400;
+}
+
+.coRow--discount .coValue {
+  color: #ef4444;   /* un poco más marcado */
+  font-weight: 500;
+}
+
+.coRow--discount {
+  margin-top: 4px;
+}
+
+

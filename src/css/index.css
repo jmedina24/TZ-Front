@@ -1,3 +1,14 @@
-body{
-    font-family: "Cooper Hewitt", sans-serif;
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+:root {
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* reset suave para mejor rendering */
+body {
+  margin: 0;
+  color: #0f172a;
+  background-color: #f8fafc; /* opcional, si usás fondo claro */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

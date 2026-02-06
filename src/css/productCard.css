@@ -1,0 +1,284 @@
+:root {
+  --tz-blue: #0081ea;
+
+  /* 🔴 rojo “suave” (unificado) */
+  --tz-red: #d32f2f;
+  --tz-red-soft: rgba(211, 47, 47, 0.10);
+
+  --tz-border: #eef2f7;
+  --tz-text: #0f172a;
+  --tz-muted: #64748b;
+}
+
+/* ================= CARD ================= */
+.tzCard {
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--tz-border);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(2, 6, 23, 0.06);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+@media (hover: hover) {
+  .tzCard:hover {
+    transform: translateY(-2px);
+    border-color: var(--tz-blue);
+    box-shadow:
+      0 14px 26px rgba(37, 99, 235, 0.18),
+      0 0 0 1px rgba(37, 99, 235, 0.15);
+  }
+}
+
+/* ✅ SIN STOCK: look apagado pero CLICKEABLE */
+.tzCard--out {
+  opacity: 0.78;
+  filter: grayscale(0.35);
+}
+
+/* ================= BADGE DESCUENTO (rojo, derecha) ================= */
+.tzCard__badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+
+  background: var(--tz-red-soft);
+  color: var(--tz-red);
+  font-weight: 800;
+  font-size: 0.85rem;
+
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(211, 47, 47, 0.25);
+  line-height: 1;
+}
+
+/* ================= RIBBON SIN STOCK (igual vencidas) ================= */
+.tzCard__ribbon {
+  position: absolute;
+  top: 26px;
+  left: -52px;
+  width: 190px;
+  text-align: center;
+  background: transparent;
+
+  color: var(--tz-red);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.6px;
+
+  border-top: 2px solid var(--tz-red);
+  border-bottom: 2px solid var(--tz-red);
+  padding: 4px 0;
+
+  transform: rotate(-45deg);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ================= IMAGE ================= */
+.tzCard__imageWrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+
+  /* ✅ MÁS AIRE ARRIBA para que el badge no “compita” con la imagen */
+  padding: 22px 14px 12px;
+
+  display: grid;
+  place-items: center;
+  background: #fff;
+}
+
+.tzCard__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 180ms ease;
+}
+
+.tzCard:hover .tzCard__img {
+  transform: scale(1.03);
+}
+
+/* ================= BODY ================= */
+.tzCard__body {
+  padding: 12px 12px 14px;
+}
+
+.tzCard__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--tz-text);
+  line-height: 1.2;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tzCard__brand {
+  font-weight: 900;
+}
+
+.tzCard__category {
+  margin: 6px 0 0;
+  color: var(--tz-muted);
+
+  /* ✅ un toque más chica para que destaque el título */
+  font-size: 0.82rem;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tzCard__divider {
+  height: 1px;
+  background: var(--tz-border);
+  margin: 12px 0 10px;
+}
+
+/* ================= BOTTOM ================= */
+.tzCard__bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tzCard__prices {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* ✅ primero tachado */
+.tzCard__priceOld {
+  font-size: 0.95rem;
+  color: var(--tz-muted);
+  text-decoration: line-through;
+  min-height: 1em; /* reserva espacio aunque no haya descuento */
+}
+
+/* ✅ después final (rojo si descuento) */
+.tzCard__price {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--tz-text);
+}
+
+.tzCard__price--discount {
+  color: var(--tz-red);
+}
+
+/* ================= ACTIONS ================= */
+.tzCard__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tzCard__iconBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+
+  display: grid;
+  place-items: center;
+
+  transition: transform 150ms ease, background 150ms ease, border-color 150ms ease;
+}
+
+.tzCard__iconBtn i {
+  font-size: 1.1rem;
+  color: var(--tz-text);
+}
+
+.tzCard__iconBtn:hover {
+  transform: translateY(-1px);
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.tzCard__iconBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* fav */
+.tzCard__iconBtn--favActive {
+  border-color: rgba(211, 47, 47, 0.35);
+  background: rgba(211, 47, 47, 0.08);
+}
+
+.tzCard__iconBtn--favActive i {
+  color: var(--tz-red);
+}
+
+/* cart */
+.tzCard__iconBtn--cartActive {
+  border-color: rgba(0, 129, 234, 0.35);
+  background: rgba(0, 129, 234, 0.08);
+}
+
+.tzCard__iconBtn--cartActive i {
+  color: var(--tz-blue);
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 480px) {
+  .tzCard__title {
+    font-size: 0.9rem;
+    -webkit-line-clamp: 1;
+  }
+
+  .tzCard__price {
+    font-size: 1.05rem;
+  }
+
+  .tzCard__priceOld {
+    font-size: 0.8rem;
+  }
+
+  /* ✅ un pelín más compacto en mobile pero manteniendo aire */
+  .tzCard__imageWrap {
+    padding: 18px 12px 10px;
+  }
+
+  .tzCard__category {
+    font-size: 0.78rem;
+  }
+
+  .tzCard__bottom {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .tzCard__prices {
+    align-items: flex-start;
+  }
+
+  .tzCard__actions {
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .tzCard__iconBtn {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+  }
+
+  .tzCard__iconBtn i {
+    font-size: 1rem;
+  }
+}

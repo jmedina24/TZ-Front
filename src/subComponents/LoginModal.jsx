@@ -1,6 +1,6 @@
-// src/components/LoginModal.jsx
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "../css/loginModal.css";
+import Portal from "../components/Portal";
 
 const LoginModal = ({
   isOpen,
@@ -8,19 +8,48 @@ const LoginModal = ({
   onLoginSuccess,
   onForgotPassword,
   onRegister,
+  initialEmail = "",
 }) => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(initialEmail || "");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [toast, setToast] = useState(null); // { message, type }
+  const [hasFieldError, setHasFieldError] = useState(false);
 
-  const [errorMsg, setErrorMsg] = useState(""); // por si querés mostrar error dentro del modal (opcional)
-  const [toast, setToast] = useState(null); // { message: string }
-  const [hasFieldError, setHasFieldError] = useState(false); // para el borde rojo
+  useEffect(() => {
+    if (!isOpen) return;
+    setEmail(initialEmail || "");
+    setPassword("");
+    setShowPassword(false);
+    setHasFieldError(false);
+    setErrorMsg("");
+    setToast(null);
+  }, [isOpen, initialEmail]);
 
-  // Autocierre del toast
+  // ESC + lock scroll
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") onClose?.();
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen, onClose]);
+
   useEffect(() => {
     if (!toast) return;
-    const timer = setTimeout(() => setToast(null), 4000);
+    const timer = setTimeout(() => setToast(null), 9000);
     return () => clearTimeout(timer);
   }, [toast]);
 
@@ -28,12 +57,14 @@ const LoginModal = ({
 
   const showError = (uiMessage, markFields = false) => {
     setErrorMsg(uiMessage);
-    setToast({ message: uiMessage });
+    setToast({ message: uiMessage, type: "error" });
     setHasFieldError(markFields);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setShowPassword(false);
     setErrorMsg("");
     setHasFieldError(false);
     setToast(null);
@@ -41,46 +72,36 @@ const LoginModal = ({
 
     try {
       const response = await fetch("http://localhost:3977/api/v1/auth/login", {
-        // 🔁 cambiá por la URL real de tu back
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        // Mapeamos según lo que envía tu back
         const msg = data.msg || "";
 
         if (response.status === 401 && msg === "Usuario inactivo") {
-          // usuario inactivo
-          showError(
-            "Usuario no activo. Contacte al administrador del sistema"
-          );
+          showError("Usuario no activo. Contacte al administrador del sistema");
         } else if (msg === "Usuario o contraseña incorrecto") {
-          showError("Usuario o contraseña incorrecto");
+          showError("Usuario o contraseña incorrecto", true);
         } else {
-          // cualquier otro error
           showError("Ocurrió un error inesperado. Intente nuevamente más tarde");
         }
-
-        return; // cortamos acá, no seguimos al login OK
+        return;
       }
 
-      // Éxito -> tu back envía { token }
       if (!data.token) {
         showError("Respuesta del servidor inválida (falta token)");
         return;
       }
 
-      onLoginSuccess && onLoginSuccess(data.token);
+      onLoginSuccess?.(data.token);
 
-      // limpiamos campos (opcional)
       setEmail("");
       setPassword("");
+      setShowPassword(false);
       setHasFieldError(false);
       setErrorMsg("");
       setToast(null);
@@ -91,97 +112,127 @@ const LoginModal = ({
     }
   };
 
-  const handleForgotPassword = () => {
-    if (onForgotPassword) onForgotPassword();
-  };
-
-  const handleRegister = () => {
-    if (onRegister) onRegister();
-  };
-
   return (
-    <>
-      {/* TOAST DE ERROR ARRIBA CENTRADO */}
-      {toast && (
-        <div className="login-toast login-toast--error">
-          <i className="bi bi-exclamation-circle-fill login-toast__icon"></i>
-          <span>{toast.message}</span>
-        </div>
-      )}
-
-      <div className="login-modal__backdrop">
-        <div className="login-modal">
-          <div className="login-modal__header">
-            <h2 className="login-modal__title">Iniciar sesión</h2>
-            <button className="login-modal__close" onClick={onClose}>
-              ✕
-            </button>
+    <Portal>
+      <>
+        {toast && (
+          <div
+            className={
+              "login-toast " +
+              (toast.type === "success"
+                ? "login-toast--success"
+                : "login-toast--error")
+            }
+          >
+            <i
+              className={
+                "bi " +
+                (toast.type === "success"
+                  ? "bi-check-circle-fill"
+                  : "bi-exclamation-circle-fill")
+              }
+              style={{ fontSize: "1.3rem" }}
+            />
+            <span>{toast.message}</span>
           </div>
+        )}
 
-          <form onSubmit={handleSubmit} className="login-modal__form">
-            <div className="floating-input">
-              <input
-                type="email"
-                required
-                className={
-                  "floating-input__field" +
-                  (hasFieldError ? " floating-input__field--error" : "")
-                }
-                placeholder=" "
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <label className="floating-input__label">Email</label>
+        <div
+          className="login-modal__backdrop"
+          onClick={() => (!isSubmitting ? onClose?.() : null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="login-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="login-modal__header">
+              <h2 className="login-modal__title">Iniciar sesión</h2>
+              <button
+                className="login-modal__close"
+                onClick={onClose}
+                disabled={isSubmitting}
+                type="button"
+              >
+                ✕
+              </button>
             </div>
 
-            <div className="floating-input">
-              <input
-                type="password"
-                required
-                className={
-                  "floating-input__field" +
-                  (hasFieldError ? " floating-input__field--error" : "")
-                }
-                placeholder=" "
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <label className="floating-input__label">Contraseña</label>
-            </div>
+            <form onSubmit={handleSubmit} className="login-modal__form">
+              <div className="floating-input">
+                <input
+                  type="email"
+                  required
+                  className={
+                    "floating-input__field" +
+                    (hasFieldError ? " floating-input__field--error" : "")
+                  }
+                  placeholder=" "
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isSubmitting}
+                />
+                <label className="floating-input__label">Email</label>
+              </div>
 
-            {/* si querés además mostrar el texto dentro del modal */}
-            {errorMsg && <p className="login-modal__error-text">{errorMsg}</p>}
+              <div className="floating-input floating-input--with-toggle">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className={
+                    "floating-input__field" +
+                    (hasFieldError ? " floating-input__field--error" : "")
+                  }
+                  placeholder=" "
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isSubmitting}
+                />
+                <label className="floating-input__label">Contraseña</label>
 
-            <button
-              type="button"
-              className="login-modal__forgot"
-              onClick={handleForgotPassword}
-            >
-              ¿Olvidó su contraseña?
-            </button>
+                {password.length > 0 && (
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowPassword((p) => !p)}
+                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    title={showPassword ? "Ocultar" : "Mostrar"}
+                    disabled={isSubmitting}
+                  >
+                    <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`} />
+                  </button>
+                )}
+              </div>
 
-            <button
-              type="submit"
-              className="login-modal__btn"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Validando..." : "Entrar"}
-            </button>
+              {errorMsg && <p className="login-modal__error-text">{errorMsg}</p>}
 
-            <p className="login-modal__register">
-              ¿No tienes cuenta?{" "}
               <button
                 type="button"
-                className="login-modal__link-btn"
-                onClick={handleRegister}
+                className="login-modal__forgot"
+                onClick={() => onForgotPassword?.()}
+                disabled={isSubmitting}
               >
-                Crea una
+                ¿Olvidó su contraseña?
               </button>
-            </p>
-          </form>
+
+              <button type="submit" className="login-modal__btn" disabled={isSubmitting}>
+                {isSubmitting ? "Validando..." : "Entrar"}
+              </button>
+
+              <p className="login-modal__register">
+                ¿No tienes cuenta?{" "}
+                <button
+                  type="button"
+                  className="login-modal__link-btn"
+                  onClick={() => onRegister?.()}
+                  disabled={isSubmitting}
+                >
+                  Crea una
+                </button>
+              </p>
+            </form>
+          </div>
         </div>
-      </div>
-    </>
+      </>
+    </Portal>
   );
 };
 

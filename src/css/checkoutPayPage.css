@@ -1,0 +1,336 @@
+/* src/css/checkoutPayPage.css */
+.payPage {
+  padding: 12px 0;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* HEAD */
+.payHead {
+  padding: 0 12px;
+  margin-bottom: 12px;
+}
+
+.payHead__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.payHead__sub {
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #64748b;
+}
+
+/* CARD */
+.payCard {
+  margin: 12px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+/* título barra azul suave */
+.payCard__title--bar {
+  margin: 0;
+  padding: 10px 12px;
+  background: rgba(0, 129, 234, 0.10);
+  color: #0081ea;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 14px 14px 0 0;
+}
+
+/* METHODS */
+.payMethods {
+  padding: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.payMethod {
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: #fff;
+  color: #0f172a;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 10px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.payMethod--active {
+  border-color: rgba(0, 129, 234, 0.45);
+  background: rgba(0, 129, 234, 0.10);
+  color: #0081ea;
+}
+
+/* CARDS LIST */
+.payCards {
+  padding: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+.payCardItem {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  cursor: pointer;
+}
+
+.payCardItem input {
+  margin-top: 3px;
+}
+
+.payCardItem__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.payBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.payBrand__logo {
+  height: 20px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.payTags {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Badge base */
+.payTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  font-weight: 500;
+  font-size: 0.82rem;
+  background: #fff;
+}
+
+/* color por tipo */
+.payTag--credit {
+  border-color: rgba(0, 129, 234, 0.35);
+  background: rgba(0, 129, 234, 0.10);
+  color: #0081ea;
+}
+
+.payTag--debit {
+  border-color: rgba(15, 23, 42, 0.16);
+  background: rgba(15, 23, 42, 0.06);
+  color: #475569;
+}
+
+.payTag--expired {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.10);
+  color: #ef4444;
+}
+
+.payCardItem__num {
+  margin-top: 6px;
+  color: #0f172a;
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+
+.payMuted {
+  color: #64748b;
+  font-size: 0.88rem;
+  font-weight: 400;
+}
+
+/* INSTALLMENTS */
+.payInstallments {
+  padding: 0 12px 12px;
+}
+
+.payInstallments__label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.paySelect {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: #fff;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+/* centrar hint de cuotas */
+.payInstallments__hint {
+  margin-top: 6px;
+  text-align: center;
+  width: 100%;
+}
+
+.payInstallments__calc {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: #0f172a;
+}
+
+/* EMPTY */
+.payEmpty {
+  padding: 12px;
+}
+
+.payEmpty__text {
+  margin: 0;
+  color: #64748b;
+  font-weight: 400;
+}
+
+/* center link action */
+.payActionLink {
+  width: 100%;
+  margin: 12px auto;
+  padding: 10px 0;
+
+  border: 0;
+  background: transparent;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  color: #0081ea;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 0.92rem;
+}
+
+/* Panel MP / PayPal */
+.payExternal {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.payExternal__text {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.92rem;
+  line-height: 1.35;
+  font-weight: 400;
+  text-align: center;
+}
+
+.payExternal__btn {
+  width: 100%;
+  max-width: 280px;
+  margin: 16px auto 0;
+  padding: 12px 14px;
+
+  display: block;
+
+  border-radius: 14px;
+  border: 1px solid rgba(0, 129, 234, 0.45);
+  background: rgba(0, 129, 234, 0.10);
+  color: #0081ea;
+
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-align: center;
+
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.payExternal__ok,
+.payExternal__hint {
+  margin-top: 8px;
+  text-align: center;
+}
+
+.payExternal__ok {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #0f172a;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.payExternal__hint {
+  color: #64748b;
+  font-size: 0.88rem;
+  font-weight: 400;
+}
+
+/* ACTIONS */
+.payActions {
+  padding: 0 12px 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.payBtn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: #fff;
+  color: #0f172a;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.payBtn--primary {
+  border-color: rgba(0, 129, 234, 0.45);
+  background: #0081ea;
+  color: #fff;
+}
+
+.payBtn--secondary {
+  background: #fff;
+  color: #64748b;
+  border: 1px solid rgba(15, 23, 42, 0.15);
+}
+
+.payBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.payCardItem--disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.payCardItem--disabled input {
+  cursor: not-allowed;
+}

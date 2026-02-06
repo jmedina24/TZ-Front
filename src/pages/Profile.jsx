@@ -1,3 +1,4 @@
+// src/pages/Profile.jsx
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
 import EditModal from "../subComponents/EditModal";
@@ -7,6 +8,14 @@ import visa from "../assets/visa.svg";
 import mc from "../assets/mastercard.svg";
 import amex from "../assets/amex.svg";
 import ConfirmModal from "../subComponents/ConfirmModal";
+
+// ✅ NUEVO: reglas de contraseña (front)
+import {
+  isValidPassword,
+  passwordChecklist,
+  passwordScore,
+} from "../utils/passwordRules";
+
 
 const API_BASE_URL = "http://localhost:3977";
 const API_PREFIX = "/api/v1";
@@ -35,24 +44,27 @@ const Profile = () => {
   });
 
   const showToast = useCallback((msg, type = "success") => {
-  setToast({ show: true, msg, type });
-  clearTimeout(window.__tz_toast);
-  window.__tz_toast = setTimeout(() => {
-    setToast({ show: false, msg: "", type: "success" });
-  }, 2500);
-}, []);
+    setToast({ show: true, msg, type });
+    clearTimeout(window.__tz_toast);
+    window.__tz_toast = setTimeout(() => {
+      setToast({ show: false, msg: "", type: "success" });
+    }, 2500);
+  }, []);
 
-  const showSuccessToast = useCallback((msg = "Datos actualizados") => {
-  showToast(msg, "success");
-}, [showToast]);
+  const showSuccessToast = useCallback(
+    (msg = "Datos actualizados") => showToast(msg, "success"),
+    [showToast]
+  );
 
-const showErrorToast = useCallback((msg = "Ocurrió un error") => {
-  showToast(msg, "error");
-}, [showToast]);
+  const showErrorToast = useCallback(
+    (msg = "Ocurrió un error") => showToast(msg, "error"),
+    [showToast]
+  );
 
-const showWarningToast = useCallback((msg = "Atención") => {
-  showToast(msg, "warning");
-}, [showToast]);
+  const showWarningToast = useCallback(
+    (msg = "Atención") => showToast(msg, "warning"),
+    [showToast]
+  );
 
   // Upload avatar
   const [isUploading, setIsUploading] = useState(false);
@@ -126,9 +138,14 @@ const showWarningToast = useCallback((msg = "Atención") => {
 
   const [recoverEmail, setRecoverEmail] = useState(user?.email || "");
 
+  // ✅ NUEVO: show/hide + info
+  const [showCurPass, setShowCurPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [showConfPass, setShowConfPass] = useState(false);
+  const [showPassInfo, setShowPassInfo] = useState(false);
+
   // ⚠️ Ajustá este endpoint según tu back
   const CHANGE_PASSWORD_URL = `${API_BASE_URL}${API_PREFIX}/auth/change-password`;
-
   // Ya lo tenés en tu API:
   const FORGOT_PASSWORD_URL = `${API_BASE_URL}${API_PREFIX}/auth/forgot-password`;
 
@@ -139,6 +156,32 @@ const showWarningToast = useCallback((msg = "Atención") => {
 
   const handleRecoverEmailChange = (e) => setRecoverEmail(e.target.value);
 
+  // ✅ computed: requisitos + fuerza
+  const passReq = useMemo(() => {
+    return passwordChecklist(changePassForm.newPassword || "");
+  }, [changePassForm.newPassword]);
+
+  const strength = useMemo(() => {
+    return passwordScore(changePassForm.newPassword || "");
+  }, [changePassForm.newPassword]);
+
+  const strengthScore = strength.score;
+  const strengthPct = strength.percent;
+  const strengthLabel = strength.label;
+
+
+  // ✅ borde rojo en inputs si hay error
+  const hasFieldError = useMemo(() => {
+    const { currentPassword, newPassword, confirmNewPassword } = changePassForm;
+
+    if (!currentPassword && !newPassword && !confirmNewPassword) return false;
+
+    if (newPassword && !isValidPassword(newPassword)) return true;
+    if (confirmNewPassword && newPassword !== confirmNewPassword) return true;
+
+    return false;
+  }, [changePassForm]);
+
   const closeChangePassModal = () => {
     setIsChangePassOpen(false);
     setChangePassForm({
@@ -146,11 +189,16 @@ const showWarningToast = useCallback((msg = "Atención") => {
       newPassword: "",
       confirmNewPassword: "",
     });
+
+    // ✅ reset iconos / popover
+    setShowCurPass(false);
+    setShowNewPass(false);
+    setShowConfPass(false);
+    setShowPassInfo(false);
   };
 
   const closeForgotModal = () => {
     setIsForgotOpen(false);
-    // mantenemos el email por comodidad
   };
 
   const handleSubmitChangePassword = async () => {
@@ -158,12 +206,15 @@ const showWarningToast = useCallback((msg = "Atención") => {
 
     if (!currentPassword.trim())
       return showErrorToast("Ingresá tu contraseña actual");
+
     if (!newPassword.trim())
       return showErrorToast("Ingresá tu nueva contraseña");
-    if (newPassword.length < 8)
+
+    if (!isValidPassword(newPassword))
       return showErrorToast(
-        "La nueva contraseña debe tener al menos 8 caracteres"
+        "La nueva contraseña no cumple los requisitos mínimos."
       );
+
     if (newPassword !== confirmNewPassword)
       return showErrorToast("Las contraseñas no coinciden");
 
@@ -268,7 +319,6 @@ const showWarningToast = useCallback((msg = "Atención") => {
 
   const onlyDigits = (s = "") => s.replace(/\D/g, "");
 
-  // ✅ 16 dígitos máximo (y espacio cada 4)
   const formatCardNumber = (value) => {
     const digits = onlyDigits(value).slice(0, 16);
     return digits.replace(/(.{4})/g, "$1 ").trim();
@@ -302,7 +352,6 @@ const showWarningToast = useCallback((msg = "Atención") => {
     return "Visa";
   };
 
-  // ✅ vencida si (año < actual) o (año == actual y mes < actual)
   const isExpired = (month, year) => {
     const m = Number(month);
     let y = Number(year);
@@ -325,7 +374,6 @@ const showWarningToast = useCallback((msg = "Atención") => {
     return { expMonth, expYear };
   };
 
-  // ===== Refresh cards desde back =====
   const refreshCards = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}${API_PREFIX}/user/getcard`, {
@@ -362,14 +410,11 @@ const showWarningToast = useCallback((msg = "Atención") => {
     else setSelectedAddressId("");
   }, [user]);
 
-  // ✅ Cuando hay token, aseguramos cards sincronizadas con el back
   useEffect(() => {
     if (token) refreshCards();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  // ✅ Warning al cargar/actualizar tarjetas (1 sola vez)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!user?.cards?.length) return;
 
@@ -381,14 +426,13 @@ const showWarningToast = useCallback((msg = "Atención") => {
       warnedExpiredCards.current = true;
       showWarningToast("Tenés tarjetas vencidas. Te recomendamos eliminarlas.");
     }
-  }, [user?.cards]);
+  }, [user?.cards, showWarningToast]);
 
   if (!user || !token)
     return <p className="profile-page">Debes iniciar sesión.</p>;
 
   const avatarUrl = user.avatar ? `${API_BASE_URL}/${user.avatar}` : null;
 
-  // 🔒 Bloquear agregar tarjeta si hay vencidas
   const hasExpiredCards = (user?.cards || []).some((c) =>
     isExpired(c.expirationMonth, c.expirationYear)
   );
@@ -694,7 +738,6 @@ const showWarningToast = useCallback((msg = "Atención") => {
 
   // ====== CARDS ======
   const openAddCard = () => {
-    // solo aviso opcional si querés
     if (hasExpiredCards && !warnedExpiredCards.current) {
       warnedExpiredCards.current = true;
       showWarningToast("Tenés tarjetas vencidas. Te recomendamos eliminarlas.");
@@ -706,7 +749,6 @@ const showWarningToast = useCallback((msg = "Atención") => {
     setIsCardModalOpen(true);
   };
 
-  // ✅ mapeo correcto (schema)
   const openEditCard = (c) => {
     const expired = isExpired(c.expirationMonth, c.expirationYear);
     if (expired) {
@@ -724,7 +766,7 @@ const showWarningToast = useCallback((msg = "Atención") => {
       holderName: c.cardHolder || "",
       number: c.cardNumber ? formatCardNumber(c.cardNumber) : "",
       expiry: mm && yy ? `${mm}/${yy}` : "",
-      cvv: "", // no precargar por seguridad
+      cvv: "",
       bank: c.bank || "",
     });
 
@@ -773,9 +815,7 @@ const showWarningToast = useCallback((msg = "Atención") => {
       }
 
       if (isExpired(expMonth, expYear)) {
-        showErrorToast(
-          "La tarjeta está vencida. Ingresá un vencimiento válido"
-        );
+        showErrorToast("La tarjeta está vencida. Ingresá un vencimiento válido");
         return;
       }
 
@@ -815,9 +855,7 @@ const showWarningToast = useCallback((msg = "Atención") => {
       }
 
       await refreshCards();
-      showSuccessToast(
-        cardMode === "add" ? "Tarjeta agregada" : "Tarjeta actualizada"
-      );
+      showSuccessToast(cardMode === "add" ? "Tarjeta agregada" : "Tarjeta actualizada");
       setIsCardModalOpen(false);
     } catch (err) {
       console.error(err);
@@ -844,10 +882,6 @@ const showWarningToast = useCallback((msg = "Atención") => {
 
       await refreshCards();
       showSuccessToast("Tarjeta eliminada");
-
-      // opcional:
-      // warnedExpiredCards.current = false;
-
       return true;
     } catch (err) {
       console.error(err);
@@ -872,12 +906,10 @@ const showWarningToast = useCallback((msg = "Atención") => {
   const requestDeleteCard = (cardId) => {
     openConfirm({
       title: "Eliminar tarjeta",
-      message:
-        "¿Seguro que querés eliminar esta tarjeta? Esta acción no se puede deshacer.",
+      message: "¿Seguro que querés eliminar esta tarjeta? Esta acción no se puede deshacer.",
       onConfirm: async () => {
         setConfirmState((p) => ({ ...p, loading: true }));
         const ok = await handleDeleteCard(cardId);
-        // si querés, solo cerrás si fue ok:
         if (ok) closeConfirm();
         else setConfirmState((p) => ({ ...p, loading: false }));
       },
@@ -889,22 +921,20 @@ const showWarningToast = useCallback((msg = "Atención") => {
       {/* Toast success/error/warning */}
       {toast.show && (
         <div
-          className={`tz-toast ${
-            toast.type === "success"
-              ? "tz-toast--success"
-              : toast.type === "error"
+          className={`tz-toast ${toast.type === "success"
+            ? "tz-toast--success"
+            : toast.type === "error"
               ? "tz-toast--error"
               : "tz-toast--warning"
-          }`}
+            }`}
         >
           <i
-            className={`bi ${
-              toast.type === "success"
-                ? "bi-check-circle-fill"
-                : toast.type === "error"
+            className={`bi ${toast.type === "success"
+              ? "bi-check-circle-fill"
+              : toast.type === "error"
                 ? "bi-x-circle-fill"
                 : "bi-exclamation-triangle-fill"
-            } tz-toast__icon`}
+              } tz-toast__icon`}
           ></i>
           <span className="tz-toast__text">{toast.msg}</span>
         </div>
@@ -917,11 +947,7 @@ const showWarningToast = useCallback((msg = "Atención") => {
         <div className="profile-header-left">
           <div className="profile-avatar-wrapper profile-avatar-editable">
             {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt="avatar"
-                className="profile-avatar-img"
-              />
+              <img src={avatarUrl} alt="avatar" className="profile-avatar-img" />
             ) : (
               <i className="bi bi-person-circle profile-avatar-placeholder"></i>
             )}
@@ -957,32 +983,24 @@ const showWarningToast = useCallback((msg = "Atención") => {
 
       {/* ===== DATOS PERSONALES ===== */}
       <section
-        className={`profile-section ${
-          openSection === "personal" ? "profile-section--active" : ""
-        }`}
+        className={`profile-section ${openSection === "personal" ? "profile-section--active" : ""
+          }`}
       >
         <button
-          className={`profile-section__header ${
-            openSection === "personal" ? "profile-section__header--active" : ""
-          }`}
+          className={`profile-section__header ${openSection === "personal" ? "profile-section__header--active" : ""
+            }`}
           onClick={() => toggleSection("personal")}
         >
           <span>
             <i className="bi bi-person"></i> Datos personales
           </span>
-          <i
-            className={`bi bi-chevron-${
-              openSection === "personal" ? "up" : "down"
-            }`}
-          />
+          <i className={`bi bi-chevron-${openSection === "personal" ? "up" : "down"}`} />
         </button>
 
         {openSection === "personal" && (
           <div className="profile-section__body">
             <div className="profile-section__body-header">
-              <span className="profile-section__body-title">
-                Información básica
-              </span>
+              <span className="profile-section__body-title">Información básica</span>
               <button
                 className="profile-button profile-button--secondary"
                 onClick={() => setIsPersonalModalOpen(true)}
@@ -1010,9 +1028,7 @@ const showWarningToast = useCallback((msg = "Atención") => {
             </div>
             <div className="profile-field">
               <span className="profile-label">Fecha de nacimiento</span>
-              <span className="profile-value">
-                {formatBirthDateUTC(user.birthDate)}
-              </span>
+              <span className="profile-value">{formatBirthDateUTC(user.birthDate)}</span>
             </div>
           </div>
         )}
@@ -1098,24 +1114,18 @@ const showWarningToast = useCallback((msg = "Atención") => {
 
       {/* ===== CONTACTO ===== */}
       <section
-        className={`profile-section ${
-          openSection === "contact" ? "profile-section--active" : ""
-        }`}
+        className={`profile-section ${openSection === "contact" ? "profile-section--active" : ""
+          }`}
       >
         <button
-          className={`profile-section__header ${
-            openSection === "contact" ? "profile-section__header--active" : ""
-          }`}
+          className={`profile-section__header ${openSection === "contact" ? "profile-section__header--active" : ""
+            }`}
           onClick={() => toggleSection("contact")}
         >
           <span>
             <i className="bi bi-telephone"></i> Contacto
           </span>
-          <i
-            className={`bi bi-chevron-${
-              openSection === "contact" ? "up" : "down"
-            }`}
-          />
+          <i className={`bi bi-chevron-${openSection === "contact" ? "up" : "down"}`} />
         </button>
 
         {openSection === "contact" && (
@@ -1125,10 +1135,7 @@ const showWarningToast = useCallback((msg = "Atención") => {
               <span className="profile-value">{user.email}</span>
             </div>
 
-            <div
-              className="profile-section__body-header"
-              style={{ marginTop: 12 }}
-            >
+            <div className="profile-section__body-header" style={{ marginTop: 12 }}>
               <span className="profile-section__body-title">Teléfonos</span>
               <button
                 className="profile-button profile-button--secondary"
@@ -1146,9 +1153,7 @@ const showWarningToast = useCallback((msg = "Atención") => {
                 {user.phones.map((p) => (
                   <div key={p._id} className="profile-card">
                     <div className="profile-card__top">
-                      <span className="profile-chip">
-                        {p.type || "Celular"}
-                      </span>
+                      <span className="profile-chip">{p.type || "Celular"}</span>
 
                       <div className="profile-card__actions">
                         <button
@@ -1239,24 +1244,18 @@ const showWarningToast = useCallback((msg = "Atención") => {
 
       {/* ===== TARJETAS ===== */}
       <section
-        className={`profile-section ${
-          openSection === "cards" ? "profile-section--active" : ""
-        }`}
+        className={`profile-section ${openSection === "cards" ? "profile-section--active" : ""
+          }`}
       >
         <button
-          className={`profile-section__header ${
-            openSection === "cards" ? "profile-section__header--active" : ""
-          }`}
+          className={`profile-section__header ${openSection === "cards" ? "profile-section__header--active" : ""
+            }`}
           onClick={() => toggleSection("cards")}
         >
           <span>
             <i className="bi bi-credit-card"></i> Métodos de pago
           </span>
-          <i
-            className={`bi bi-chevron-${
-              openSection === "cards" ? "up" : "down"
-            }`}
-          />
+          <i className={`bi bi-chevron-${openSection === "cards" ? "up" : "down"}`} />
         </button>
 
         {openSection === "cards" && (
@@ -1278,17 +1277,12 @@ const showWarningToast = useCallback((msg = "Atención") => {
             ) : (
               <div className="profile-cards">
                 {user.cards.map((c) => {
-                  const expired = isExpired(
-                    c.expirationMonth,
-                    c.expirationYear
-                  );
+                  const expired = isExpired(c.expirationMonth, c.expirationYear);
 
                   return (
                     <div
                       key={c._id}
-                      className={`profile-card ${
-                        expired ? "profile-card--expired" : ""
-                      }`}
+                      className={`profile-card ${expired ? "profile-card--expired" : ""}`}
                       aria-disabled={expired ? "true" : "false"}
                     >
                       {expired && (
@@ -1309,9 +1303,7 @@ const showWarningToast = useCallback((msg = "Atención") => {
                                   className="profile-chip__logo"
                                 />
                               )}
-                              <span className="profile-chip__text">
-                                {brand.label}
-                              </span>
+                              <span className="profile-chip__text">{brand.label}</span>
                             </span>
                           );
                         })()}
@@ -1354,9 +1346,7 @@ const showWarningToast = useCallback((msg = "Atención") => {
                         </div>
 
                         {!!c.bank && (
-                          <div className="profile-card__line">
-                            Banco: {c.bank}
-                          </div>
+                          <div className="profile-card__line">Banco: {c.bank}</div>
                         )}
                       </div>
                     </div>
@@ -1373,11 +1363,7 @@ const showWarningToast = useCallback((msg = "Atención") => {
         title={cardMode === "add" ? "Agregar tarjeta" : "Editar tarjeta"}
         onClose={() => setIsCardModalOpen(false)}
       >
-        <CardPreview
-          number={cardForm.number}
-          holderName={cardForm.holderName}
-          expiry={cardForm.expiry}
-        />
+        <CardPreview number={cardForm.number} holderName={cardForm.holderName} expiry={cardForm.expiry} />
 
         <div className="profile-modal-form">
           <div className="profile-modal-field">
@@ -1400,7 +1386,7 @@ const showWarningToast = useCallback((msg = "Atención") => {
               onChange={handleCardChange}
               placeholder="1234 5678 9012 3456"
               inputMode="numeric"
-              maxLength={19} // 16 dígitos + 3 espacios
+              maxLength={19}
             />
           </div>
 
@@ -1465,32 +1451,24 @@ const showWarningToast = useCallback((msg = "Atención") => {
 
       {/* ===== DIRECCIONES ===== */}
       <section
-        className={`profile-section ${
-          openSection === "addresses" ? "profile-section--active" : ""
-        }`}
+        className={`profile-section ${openSection === "addresses" ? "profile-section--active" : ""
+          }`}
       >
         <button
-          className={`profile-section__header ${
-            openSection === "addresses" ? "profile-section__header--active" : ""
-          }`}
+          className={`profile-section__header ${openSection === "addresses" ? "profile-section__header--active" : ""
+            }`}
           onClick={() => toggleSection("addresses")}
         >
           <span>
             <i className="bi bi-geo-alt"></i> Direcciones
           </span>
-          <i
-            className={`bi bi-chevron-${
-              openSection === "addresses" ? "up" : "down"
-            }`}
-          />
+          <i className={`bi bi-chevron-${openSection === "addresses" ? "up" : "down"}`} />
         </button>
 
         {openSection === "addresses" && (
           <div className="profile-section__body">
             <div className="profile-section__body-header">
-              <span className="profile-section__body-title">
-                Mis direcciones
-              </span>
+              <span className="profile-section__body-title">Mis direcciones</span>
 
               <button
                 className="profile-button profile-button--secondary"
@@ -1508,9 +1486,7 @@ const showWarningToast = useCallback((msg = "Atención") => {
                 {user.addresses.map((a) => (
                   <div key={a._id} className="profile-card">
                     <div className="profile-card__top">
-                      <span className="profile-chip">
-                        {a.reference || "Casa"}
-                      </span>
+                      <span className="profile-chip">{a.reference || "Casa"}</span>
 
                       <div className="profile-card__actions">
                         <button
@@ -1536,15 +1512,12 @@ const showWarningToast = useCallback((msg = "Atención") => {
 
                     <div className="profile-card__body">
                       <div className="profile-card__line">
-                        <strong>{a.street || "-"}</strong>{" "}
-                        {a.number ? `#${a.number}` : ""}
+                        <strong>{a.street || "-"}</strong> {a.number ? `#${a.number}` : ""}
                       </div>
                       <div className="profile-card__line">
                         {a.city || "-"}, {a.department || "-"}
                       </div>
-                      <div className="profile-card__line">
-                        CP: {a.postalCode || "-"}
-                      </div>
+                      <div className="profile-card__line">CP: {a.postalCode || "-"}</div>
                     </div>
                   </div>
                 ))}
@@ -1653,24 +1626,18 @@ const showWarningToast = useCallback((msg = "Atención") => {
 
       {/* ===== SEGURIDAD ===== */}
       <section
-        className={`profile-section ${
-          openSection === "security" ? "profile-section--active" : ""
-        }`}
+        className={`profile-section ${openSection === "security" ? "profile-section--active" : ""
+          }`}
       >
         <button
-          className={`profile-section__header ${
-            openSection === "security" ? "profile-section__header--active" : ""
-          }`}
+          className={`profile-section__header ${openSection === "security" ? "profile-section__header--active" : ""
+            }`}
           onClick={() => toggleSection("security")}
         >
           <span>
             <i className="bi bi-shield-lock"></i> Seguridad
           </span>
-          <i
-            className={`bi bi-chevron-${
-              openSection === "security" ? "up" : "down"
-            }`}
-          />
+          <i className={`bi bi-chevron-${openSection === "security" ? "up" : "down"}`} />
         </button>
 
         {openSection === "security" && (
@@ -1692,9 +1659,7 @@ const showWarningToast = useCallback((msg = "Atención") => {
                   <button
                     className="profile-button profile-button--primary"
                     type="button"
-                    onClick={() => {
-                      setIsChangePassOpen(true);
-                    }}
+                    onClick={() => setIsChangePassOpen(true)}
                   >
                     Cambiar contraseña
                   </button>
@@ -1705,79 +1670,184 @@ const showWarningToast = useCallback((msg = "Atención") => {
                 <span>Opciones alternativas</span>
               </div>
 
-              {/* ===== MODAL: CAMBIAR CONTRASEÑA ===== */}
+              {/* ===== MODAL: CAMBIAR CONTRASEÑA (mismo look que Login/Register) ===== */}
               <EditModal
                 isOpen={isChangePassOpen}
                 title="Cambiar contraseña"
                 onClose={closeChangePassModal}
               >
-                <div className="profile-modal-form">
-                  <div className="profile-modal-field">
-                    <label className="profile-modal-label">
-                      Contraseña actual
-                    </label>
+                <form
+                  className={`login-modal__form ${showPassInfo ? "login-modal__form--popover" : ""}`}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSubmitChangePassword();
+                  }}
+                >
+                  {/* Contraseña actual */}
+                  <div className="floating-input lpw-field">
                     <input
-                      className="profile-modal-input"
-                      type="password"
+                      type={showCurPass ? "text" : "password"}
+                      required
+                      className={
+                        "floating-input__field" +
+                        (hasFieldError ? " floating-input__field--error" : "")
+                      }
+                      placeholder=" "
                       name="currentPassword"
                       value={changePassForm.currentPassword}
                       onChange={handleChangePassField}
-                      placeholder="••••••••"
+                      disabled={isChangingPass}
+                      autoComplete="current-password"
                     />
+                    <label className="floating-input__label">
+                      Contraseña actual
+                    </label>
+
+                    {changePassForm.currentPassword.length > 0 && (
+                      <button
+                        type="button"
+                        className="lpw-icon-btn lpw-icon-btn--solo"
+                        onClick={() => setShowCurPass((v) => !v)}
+                        disabled={isChangingPass}
+                      >
+                        <i className={`bi ${showCurPass ? "bi-eye-slash" : "bi-eye"}`} />
+                      </button>
+                    )}
+
+
                   </div>
 
-                  <div className="profile-modal-field">
-                    <label className="profile-modal-label">
-                      Nueva contraseña
-                    </label>
+                  <div className="floating-input lpw-field">
                     <input
-                      className="profile-modal-input"
-                      type="password"
+                      className="floating-input__field"
+                      type={showNewPass ? "text" : "password"}
                       name="newPassword"
                       value={changePassForm.newPassword}
                       onChange={handleChangePassField}
-                      placeholder="Mínimo 8 caracteres"
+                      placeholder=" "
+                      disabled={isChangingPass}
+                      autoComplete="new-password"
                     />
+                    <label className="floating-input__label">Nueva contraseña</label>
+
+                    {/* ===== ICONOS (info + ojo) ===== */}
+                    <div className="lpw-icons">
+                      {/* info siempre visible */}
+                      <button
+                        type="button"
+                        className="lpw-icon-btn"
+                        onClick={() => setShowPassInfo((v) => !v)}
+                        title="Requisitos"
+                        disabled={isChangingPass}
+                      >
+                        <i className="bi bi-info-circle" />
+                      </button>
+
+                      {/* ojo solo si hay texto */}
+                      {changePassForm.newPassword.length > 0 && (
+                        <button
+                          type="button"
+                          className="lpw-icon-btn"
+                          onClick={() => setShowNewPass((v) => !v)}
+                          title={showNewPass ? "Ocultar" : "Mostrar"}
+                          disabled={isChangingPass}
+                        >
+                          <i className={`bi ${showNewPass ? "bi-eye-slash" : "bi-eye"}`} />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* ===== POPOVER ===== */}
+                    {showPassInfo && (
+                      <>
+                        <button
+                          type="button"
+                          className="lpw-overlay"
+                          onClick={() => setShowPassInfo(false)}
+                        />
+                        <div className="lpw-popover">
+                          <p className="lpw-popover__title">Requisitos</p>
+                          <ul className="lpw-popover__list">
+                            <li className={passReq.len ? "ok" : ""}>Mínimo 10 caracteres</li>
+                            <li className={passReq.upper ? "ok" : ""}>Al menos una mayúscula</li>
+                            <li className={passReq.lower ? "ok" : ""}>Al menos una minúscula</li>
+                            <li className={passReq.num ? "ok" : ""}>Al menos un número</li>
+                            <li className={passReq.special ? "ok" : ""}>Al menos un caracter especial</li>
+                          </ul>
+                        </div>
+                      </>
+                    )}
+
+                    {/* ===== FORTALEZA ===== */}
+                    {changePassForm.newPassword.length > 0 && (
+                      <div className="lpw-strength">
+                        <div className="lpw-bar">
+                          <div
+                            className="lpw-fill"
+                            style={{
+                              width: `${strengthPct}%`,
+                              background:
+                                strengthScore <= 2
+                                  ? "#dc3545"
+                                  : strengthScore === 3
+                                    ? "#f59e0b"
+                                    : "#16a34a",
+                            }}
+                          />
+                        </div>
+                        <p className="lpw-meta">Fortaleza: {strengthLabel}</p>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="profile-modal-field">
-                    <label className="profile-modal-label">
-                      Confirmar nueva contraseña
-                    </label>
+                  {/* Confirmar nueva contraseña */}
+                  <div className="floating-input lpw-field">
                     <input
-                      className="profile-modal-input"
-                      type="password"
+                      type={showConfPass ? "text" : "password"}
+                      required
+                      className={
+                        "floating-input__field" +
+                        (hasFieldError ? " floating-input__field--error" : "")
+                      }
+                      placeholder=" "
                       name="confirmNewPassword"
                       value={changePassForm.confirmNewPassword}
-                      onChange={handleChangePassField}
-                      placeholder="Repetí la nueva contraseña"
+                      onChange={(e) => {
+                        handleChangePassField(e);
+                        if (!e.target.value) setShowConfPass(false);
+                      }}
+                      disabled={isChangingPass}
+                      autoComplete="new-password"
                     />
+                    <label className="floating-input__label">
+                      Confirmar nueva contraseña
+                    </label>
+
+                    {changePassForm.confirmNewPassword.length > 0 && (
+                      <button
+                        type="button"
+                        className="lpw-icon-btn lpw-icon-btn--solo"
+                        onClick={() => setShowConfPass((v) => !v)}
+                        disabled={isChangingPass}
+                      >
+                        <i className={`bi ${showConfPass ? "bi-eye-slash" : "bi-eye"}`} />
+                      </button>
+                    )}
+
+
                   </div>
 
-                  <div className="profile-modal-actions">
-                    <button
-                      className="profile-button profile-button--ghost"
-                      onClick={closeChangePassModal}
-                      disabled={isChangingPass}
-                      type="button"
-                    >
-                      Cancelar
-                    </button>
-
-                    <button
-                      className="profile-button profile-button--primary"
-                      onClick={handleSubmitChangePassword}
-                      disabled={isChangingPass}
-                      type="button"
-                    >
-                      {isChangingPass ? "Guardando..." : "Guardar"}
-                    </button>
-                  </div>
-                </div>
+                  <button
+                    type="submit"
+                    className="login-modal__btn"
+                    disabled={isChangingPass}
+                  >
+                    {isChangingPass ? "Guardando..." : "Guardar"}
+                  </button>
+                </form>
               </EditModal>
 
               {/* Recuperación */}
-
               <div className="profile-card profile-card--secondary">
                 <div className="profile-card__top">
                   <span className="profile-chip">
@@ -1787,21 +1857,19 @@ const showWarningToast = useCallback((msg = "Atención") => {
 
                 <div className="profile-card__body">
                   <p className="profile-card__text">
-                    Enviá un email para recuperar el acceso si olvidás tu
-                    contraseña.
+                    Enviá un email para recuperar el acceso si olvidás tu contraseña.
                   </p>
 
                   <button
                     className="profile-button profile-button--secondary"
                     type="button"
-                    onClick={() => {
-                      setIsForgotOpen(true);
-                    }}
+                    onClick={() => setIsForgotOpen(true)}
                   >
                     Enviar email de recuperación
                   </button>
                 </div>
               </div>
+
               {/* ===== MODAL: RECUPERAR CONTRASEÑA ===== */}
               <EditModal
                 isOpen={isForgotOpen}
@@ -1810,8 +1878,7 @@ const showWarningToast = useCallback((msg = "Atención") => {
               >
                 <div className="profile-modal-form">
                   <p className="profile-card__text" style={{ marginTop: 0 }}>
-                    Te vamos a enviar un email con instrucciones para recuperar
-                    el acceso.
+                    Te vamos a enviar un email con instrucciones para recuperar el acceso.
                   </p>
 
                   <div className="profile-modal-field">
@@ -1864,3 +1931,4 @@ const showWarningToast = useCallback((msg = "Atención") => {
 };
 
 export default Profile;
+

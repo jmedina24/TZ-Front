@@ -1,0 +1,43 @@
+.tzSticky {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: var(--tz-sticky-bottom, 0px);
+  z-index: 80;
+ 
+
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(15, 23, 42, 0.10);
+
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+
+  /* estado inicial */
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 220ms ease-out, transform 220ms ease-out;
+}
+
+.tzSticky--in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tzSticky__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  gap: 10px;
+}
+
+/* ✅ 2 botones tipo Checkout */
+.tzSticky__inner--row {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .tzSticky__inner--row {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+}

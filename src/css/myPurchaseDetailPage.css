@@ -1,0 +1,30 @@
+/* src/css/myPurchaseDetailPage.css */
+
+/* ✅ deja aire para el StickyActions */
+.mpdPage {
+  padding-bottom: 120px;
+}
+
+/* Botones del sticky (mismo vibe que Favoritos / Mis Compras) */
+.mpdBtn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: #fff;
+  color: #0f172a;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.mpdBtn--primary {
+  border-color: rgba(0, 129, 234, 0.45);
+  background: #0081ea;
+  color: #fff;
+}
+
+.mpdBtn--secondary {
+  background: #fff;
+  color: #64748b;
+  border: 1px solid rgba(15, 23, 42, 0.15);
+}

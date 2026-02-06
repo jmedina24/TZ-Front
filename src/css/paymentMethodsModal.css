@@ -1,0 +1,205 @@
+:root{
+  --tz-blue: #0081ea;
+  --tz-text: #0f172a;
+  --tz-muted: #64748b;
+  --tz-border: #eef2f7;
+
+  /* ✅ estilo "checkout": azul claro + azul más oscuro */
+  --tz-blue-soft: rgba(0,129,234,.10);
+  --tz-blue-soft-border: rgba(0,129,234,.18);
+  --tz-blue-ink: #0081ea; /* azul más oscuro para textos */
+}
+
+/* Overlay */
+.pmOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,.55);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 1600;
+
+  font-family: inherit;
+  animation: pmFadeIn .18s ease-out;
+}
+
+@keyframes pmFadeIn{
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Panel */
+.pmPanel{
+  width: 100%;
+  max-width: 560px;
+  border-radius: 18px;
+  overflow: hidden;
+
+  background: #fff;
+  border: 1px solid rgba(15,23,42,.10);
+  box-shadow: 0 16px 46px rgba(2,6,23,.28);
+
+  transform-origin: 50% 20%;
+  animation: pmPopIn .20s ease-out;
+}
+
+@keyframes pmPopIn{
+  from { opacity: 0; transform: translateY(6px) scale(.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ✅ Header azul claro estilo checkout */
+.pmHead{
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  background: var(--tz-blue-soft);
+  border-bottom: 1px solid var(--tz-blue-soft-border);
+}
+
+.pmTitle{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+    font-size: .95rem;
+  font-family: inherit;
+  font-weight: 600;            /* ✅ no ultra bold */
+  color: var(--tz-blue-ink);   /* ✅ azul más oscuro */
+  letter-spacing: .1px;
+}
+
+.pmTitle i{
+  color: var(--tz-blue-ink);
+  opacity: .95;
+}
+
+/* Close */
+.pmClose{
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+
+  border: 1px solid rgba(11,58,115,.15);
+  background: rgba(255,255,255,.55);
+  color: var(--tz-blue-ink);
+
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+
+  transition: transform .12s ease, background .15s ease, border-color .15s ease;
+}
+.pmClose:hover{
+  background: rgba(255,255,255,.75);
+  border-color: rgba(11,58,115,.22);
+}
+.pmClose:active{ transform: scale(.98); }
+
+/* Body con más aire */
+.pmBody{
+  padding: 16px 14px 12px;
+  display: grid;
+  gap: 14px; /* ✅ un poquito más de aire */
+}
+
+/* Bloques */
+.pmBox{
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid var(--tz-blue-soft-border);
+  box-shadow: 0 8px 18px rgba(2,6,23,.06);
+  padding: 14px;
+}
+
+.pmBox__top{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.pmBox__top--brandOnly{
+  justify-content: flex-start;
+}
+
+.pmBox__title{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .90rem;
+  font-family: inherit;
+  font-weight: 600; /* ✅ coherente */
+  color: var(--tz-text);
+}
+.pmBox__title i{ color: var(--tz-blue); }
+
+/* Íconos assets */
+.pmIcons{
+  display: inline-flex;
+  align-items: center;
+  gap: 14px; /* ✅ más espacio */
+  flex-wrap: wrap;
+}
+
+.pmIcon{
+  height: 22px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.pmIcon--wide{
+  height: 24px;
+}
+
+/* Nota debajo */
+.pmBox__note{
+  margin-top: 10px;
+  color: var(--tz-muted);
+  font-size: .80rem;  /* ✅ un toque más chico */
+  line-height: 1.35;
+  font-weight: 400;
+}
+
+.pmBox__note strong{
+  color: var(--tz-text);
+  font-weight: 600; /* ✅ no 900 */
+}
+
+/* Footer */
+.pmFoot{
+  padding: 12px 14px 14px;
+  border-top: 1px solid var(--tz-border);
+}
+
+/* Botón como el resto (peso 500) */
+.pmBtn{
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+
+  font-family: inherit;
+  font-weight: 500; /* ✅ */
+}
+
+.pmBtn--primary{
+  background: var(--tz-blue);
+  color: #fff;
+  transition: transform .12s ease, filter .15s ease;
+}
+.pmBtn--primary:hover{ filter: brightness(0.98); }
+.pmBtn--primary:active{ transform: scale(.99); }
+
+/* Responsive */
+@media (max-width: 420px){
+  .pmIcon{ height: 20px; }
+  .pmIcon--wide{ height: 22px; }
+  .pmBody{ padding: 14px 12px 10px; }
+}

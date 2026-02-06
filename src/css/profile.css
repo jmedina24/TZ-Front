@@ -1,9 +1,16 @@
+/* ===========================
+   PROFILE (TechZone) - CLEAN
+=========================== */
+
 .profile-page {
   padding: 16px;
   background: #f4f6fb;
   min-height: 100vh;
 }
 
+/* ===========================
+   HEADER
+=========================== */
 .profile-header {
   background: #fff;
   padding: 16px;
@@ -18,6 +25,18 @@
   align-items: center;
 }
 
+.profile-header-email {
+  max-width: 100%;
+  font-size: 0.9rem;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===========================
+   AVATAR
+=========================== */
 .profile-avatar-wrapper {
   width: 80px;
   height: 80px;
@@ -33,18 +52,9 @@
 .profile-avatar-img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* recorta y llena el círculo */
-  object-position: center; /* centra el recorte */
-  display: block; /* evita espacios raros */
-}
-
-.profile-avatar-wrapper img {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
   object-position: center;
   display: block;
-  flex: 0 0 80px;
 }
 
 .profile-avatar-wrapper i {
@@ -52,11 +62,71 @@
   color: #9ca3af;
 }
 
+/* Avatar editable */
+.profile-avatar-editable {
+  position: relative;
+  cursor: pointer;
+}
+
+.profile-avatar-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  background: #0081ea;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.profile-avatar-overlay i {
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.profile-avatar-editable:hover .profile-avatar-overlay {
+  transform: scale(1.05);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.32);
+}
+
+.profile-avatar-overlay:active {
+  transform: scale(0.95);
+}
+
+.profile-avatar-loading {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.profile-avatar-loading i {
+  font-size: 1.4rem;
+  animation: spin 0.9s linear infinite;
+}
+
+/* ===========================
+   SECTIONS
+=========================== */
 .profile-section {
   background: #fff;
   border-radius: 14px;
   margin-bottom: 10px;
   overflow: hidden;
+  border: 1px solid transparent;
+}
+
+.profile-section--active {
+  border-color: #0081ea;
 }
 
 .profile-section__header {
@@ -68,6 +138,19 @@
   justify-content: space-between;
   font-weight: 600;
   cursor: pointer;
+}
+
+.profile-section__header--active {
+  background: #0081ea;
+  color: #ffffff;
+}
+
+.profile-section__header--active i {
+  color: #ffffff;
+}
+
+.profile-section__header:hover {
+  filter: brightness(0.98);
 }
 
 .profile-section__body {
@@ -91,6 +174,9 @@
   font-weight: 600;
 }
 
+/* ===========================
+   BUTTONS
+=========================== */
 .profile-button {
   padding: 6px 12px;
   border-radius: 999px;
@@ -114,17 +200,59 @@
   color: white;
 }
 
-/* MODAL */
+.profile-button--danger {
+  background: #dc3545;
+  color: #fff;
+  border: 1px solid #dc3545;
+}
+
+.profile-button--danger:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ===========================
+   MODAL (simple profile modals)
+   (Para los otros modales que NO usan loginModal)
+=========================== */
 .profile-modal-form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-.profile-modal-form input {
-  padding: 8px;
-  border-radius: 8px;
+.profile-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.profile-modal-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.profile-modal-input {
+  width: 100%;
+  border-radius: 10px;
   border: 1px solid #d1d5db;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  color: #111827;
+  background: #ffffff;
+}
+
+.profile-modal-input:focus {
+  outline: none;
+  border-color: #0081ea;
+  box-shadow: 0 0 0 3px rgba(0, 129, 234, 0.18);
+}
+
+.profile-modal-input::placeholder {
+  color: #9ca3af;
 }
 
 .profile-modal-actions {
@@ -141,6 +269,9 @@
   color: #111827;
 }
 
+/* ===========================
+   LIST / EMPTY
+=========================== */
 .profile-empty {
   color: #9ca3af;
   font-size: 0.9rem;
@@ -157,7 +288,9 @@
   border-bottom: none;
 }
 
-/* TOAST (verde) */
+/* ===========================
+   TOAST
+=========================== */
 .tz-toast {
   position: fixed;
   top: 10px;
@@ -175,6 +308,33 @@
   animation: tzToastIn 0.18s ease-out;
 }
 
+.tz-toast__icon {
+  font-size: 1.2rem;
+}
+
+.tz-toast__text {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.tz-toast--success {
+  background: #16a34a;
+  color: #fff;
+}
+
+.tz-toast--error {
+  background: #dc2626;
+  color: #fff;
+}
+
+.tz-toast--warning {
+  background: #f59e0b;
+  color: #fff;
+}
+
+/* ===========================
+   CARDS (profile "cards" list)
+=========================== */
 .profile-cards {
   display: flex;
   flex-direction: column;
@@ -183,6 +343,11 @@
   border-radius: 14px;
   padding: 12px;
   background: #fff;
+}
+
+.profile-card {
+  position: relative;
+  overflow: hidden;
 }
 
 .profile-card__top {
@@ -203,6 +368,25 @@
   font-size: 0.8rem;
 }
 
+.profile-chip--brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-chip__logo {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+.profile-chip__text {
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1;
+}
+
 .profile-card__actions {
   display: flex;
   gap: 6px;
@@ -214,10 +398,6 @@
   border-radius: 10px;
   padding: 6px 8px;
   cursor: pointer;
-}
-
-.profile-icon-btn i {
-  margin: 0;
 }
 
 .profile-icon-btn:hover {
@@ -238,6 +418,42 @@
   color: #111827;
 }
 
+/* Card vencida: look + bloqueo */
+.profile-card--expired {
+  opacity: 0.65;
+  filter: grayscale(0.4);
+  pointer-events: none;
+}
+
+/* permitimos eliminar */
+.profile-card--expired .profile-icon-btn--danger {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+/* ribbon vencida */
+.profile-card__ribbon {
+  position: absolute;
+  top: 14px;
+  left: -48px;
+  width: 180px;
+  text-align: center;
+  background: transparent;
+  color: #d32f2f;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.6px;
+  border-top: 2px solid #d32f2f;
+  border-bottom: 2px solid #d32f2f;
+  padding: 4px 0;
+  transform: rotate(-45deg);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ===========================
+   CARD PREVIEW
+=========================== */
 .card-preview {
   width: 100%;
   height: 190px;
@@ -288,341 +504,9 @@
   font-size: 0.85rem;
 }
 
-.profile-card {
-  position: relative;
-}
-
-.profile-card--expired {
-  opacity: 0.65;
-  filter: grayscale(0.2);
-}
-
-.profile-card__ribbon {
-  position: absolute;
-  top: 10px;
-  left: -8px;
-  background: #dc2626;
-  color: #fff;
-  padding: 6px 10px;
-  font-weight: 700;
-  font-size: 0.75rem;
-  border-radius: 10px;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
-}
-
-/* Toast error */
-.tz-toast--error {
-  background: #dc2626;
-  color: #ffffff;
-}
-
-/* Card vencida */
-.profile-card--expired {
-  opacity: 0.7;
-  filter: grayscale(0.35);
-  position: relative;
-}
-
-/* Franja roja "Tarjeta vencida" */
-.profile-card__ribbon {
-  position: absolute;
-  top: 10px;
-  left: -32px;
-  transform: rotate(-12deg);
-  background: #dc2626;
-  color: #fff;
-  font-weight: 700;
-  font-size: 12px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  z-index: 2;
-  letter-spacing: 0.6px;
-}
-
-.profile-card--expired {
-  pointer-events: none;
-  opacity: 0.65;
-  filter: grayscale(0.4);
-}
-
-/* PERMITIMOS SOLO EL BOTÓN ELIMINAR */
-.profile-card--expired .profile-icon-btn--danger {
-  pointer-events: auto;
-  opacity: 1;
-}
-
-.tz-toast--warning {
-  background: #f59e0b; /* ámbar */
-  color: #ffffff;
-}
-
-.tz-toast--error {
-  background: #dc2626;
-  color: #ffffff;
-}
-
-/* Card vencida: se ve deshabilitada */
-.profile-card--expired {
-  opacity: 0.65;
-  filter: grayscale(1);
-  pointer-events: none; /* bloquea clicks dentro */
-  position: relative;
-}
-
-/* pero permitimos el botón eliminar */
-.profile-card--expired .profile-icon-btn--danger {
-  pointer-events: auto;
-}
-
-/* Franja roja */
-.profile-card__ribbon {
-  position: absolute;
-  top: 10px;
-  right: -40px;
-  transform: rotate(35deg);
-  background: #dc2626;
-  color: #fff;
-  padding: 6px 50px;
-  font-weight: 700;
-  font-size: 12px;
-  z-index: 2;
-}
-
-/* Toast types */
-.tz-toast--success {
-  background: #16a34a;
-  color: #fff;
-}
-.tz-toast--error {
-  background: #dc2626;
-  color: #fff;
-}
-.tz-toast--warning {
-  background: #f59e0b;
-  color: #fff;
-}
-
-.profile-chip--brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.profile-chip__logo {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-  display: block;
-}
-
-.profile-chip__text {
-  font-weight: 600;
-  font-size: 13px;
-  line-height: 1;
-}
-
-.profile-card {
-  position: relative;
-  overflow: hidden; /* CLAVE para que no salga de la card */
-}
-
-/* cinta */
-.profile-card__ribbon {
-  position: absolute;
-  top: 14px;
-  left: -48px;
-
-  width: 180px;
-  text-align: center;
-
-  background: transparent;
-  color: #d32f2f; /* rojo */
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.6px;
-
-  border-top: 2px solid #d32f2f;
-  border-bottom: 2px solid #d32f2f;
-
-  padding: 4px 0;
-
-  transform: rotate(-45deg);
-  pointer-events: none;
-  z-index: 2;
-}
-
-.profile-card--expired {
-  opacity: 0.75;
-}
-
-.profile-card--expired {
-  filter: grayscale(0.4);
-}
-
-.profile-button--danger {
-  background: #dc3545;
-  color: #fff;
-  border: 1px solid #dc3545;
-}
-.profile-button--danger:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-@keyframes tzToastIn {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-.tz-toast--success {
-  background: #16a34a;
-  color: #ffffff;
-}
-
-.tz-toast__icon {
-  font-size: 1.2rem;
-}
-
-.tz-toast__text {
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-/* SECCIÓN ACTIVA: borde azul */
-.profile-section {
-  border: 1px solid transparent;
-}
-
-.profile-section--active {
-  border-color: #0081ea;
-}
-
-/* Header activo: fondo azul + letras blancas */
-.profile-section__header--active {
-  background: #0081ea;
-  color: #ffffff;
-}
-
-/* Que los íconos también queden blancos cuando está activo */
-.profile-section__header--active i {
-  color: #ffffff;
-}
-
-/* Hover (solo el header) para que se sienta interactivo */
-.profile-section__header:hover {
-  filter: brightness(0.98);
-}
-
-/* Modal: fields en columna, full width */
-.profile-modal-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.profile-modal-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-}
-
-.profile-modal-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #111827;
-  margin: 0;
-}
-
-/* Input full width */
-.profile-modal-input {
-  width: 100%;
-  border-radius: 10px;
-  border: 1px solid #d1d5db;
-  padding: 10px 12px;
-  font-size: 0.95rem;
-  color: #111827;
-  background: #ffffff;
-}
-
-/* Focus azul TechZone */
-.profile-modal-input:focus {
-  outline: none;
-  border-color: #0081ea;
-  box-shadow: 0 0 0 3px rgba(0, 129, 234, 0.18);
-}
-
-/* Opcional: si querés que el input se vea mejor en mobile */
-.profile-modal-input::placeholder {
-  color: #9ca3af;
-}
-
-/* Avatar editable */
-.profile-avatar-editable {
-  position: relative;
-  cursor: pointer;
-}
-
-/* Overlay ícono */
-.profile-avatar-overlay {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 36px;
-  height: 36px;
-  background: #0081ea;
-  color: #ffffff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.profile-avatar-overlay i {
-  font-size: 1rem;
-  color: #ffffff;
-}
-
-.profile-avatar-overlay:active {
-  transform: scale(0.95);
-}
-
-/* Hover sutil (desktop) */
-.profile-avatar-editable:hover .profile-avatar-overlay {
-  transform: scale(1.05);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.32);
-}
-
-/* Placeholder icon */
-.profile-avatar-placeholder {
-  font-size: 3rem;
-  color: #9ca3af;
-}
-
-.profile-avatar-loading {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-}
-
-.profile-avatar-loading i {
-  font-size: 1.4rem;
-  animation: spin 0.9s linear infinite;
-}
-
+/* ===========================
+   SECURITY UI HELPERS
+=========================== */
 .profile-card__text {
   font-size: 0.9rem;
   color: #374151;
@@ -630,14 +514,10 @@
   line-height: 1.4;
 }
 
-.profile-security-cards{
+.profile-security-cards {
   display: flex;
   flex-direction: column;
-  gap: 18px; 
-}
-
-.profile-security-cards .profile-card + .profile-card{
-  margin-top: 6px;
+  gap: 18px;
 }
 
 .profile-security-separator {
@@ -654,10 +534,12 @@
   content: "";
   flex: 1;
   height: 1px;
-  background: rgba(0,0,0,0.08);
+  background: rgba(0, 0, 0, 0.08);
 }
 
-/* ===== ResetPassword modern form ===== */
+/* ===========================
+   ResetPassword (if you reuse tz-form)
+=========================== */
 .tz-form {
   display: grid;
   gap: 14px;
@@ -675,21 +557,19 @@
   height: 46px;
   padding: 14px 12px 10px;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
   color: inherit;
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
-/* borde azul al focus */
 .tz-input:focus {
-  border-color: #0081EA;
+  border-color: #0081ea;
   box-shadow: 0 0 0 3px rgba(45, 125, 255, 0.22);
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-/* label flotante */
 .tz-label {
   position: absolute;
   left: 12px;
@@ -700,7 +580,6 @@
   transition: transform 0.15s ease, opacity 0.15s ease, top 0.15s ease, font-size 0.15s ease;
 }
 
-/* input con placeholder=" " permite :placeholder-shown */
 .tz-input:focus + .tz-label,
 .tz-input:not(:placeholder-shown) + .tz-label {
   top: 6px;
@@ -708,7 +587,6 @@
   opacity: 0.9;
 }
 
-/* helper text */
 .tz-hint {
   font-size: 12px;
   opacity: 0.65;
@@ -718,33 +596,22 @@
 .tz-error {
   font-size: 13px;
   color: #ff5a5a;
-  background: rgba(255, 90, 90, 0.10);
-  border: 1px solid rgba(255, 90, 90, 0.20);
+  background: rgba(255, 90, 90, 0.1);
+  border: 1px solid rgba(255, 90, 90, 0.2);
   padding: 10px 12px;
   border-radius: 12px;
 }
 
-/* botón mismo ancho que inputs, azul */
 .tz-btn-primary {
   width: 100%;
   height: 46px;
   border-radius: 12px;
   border: none;
   cursor: pointer;
-  background: #0081EA;
+  background: #0081ea;
   color: #fff;
   font-weight: 600;
   transition: transform 0.1s ease, opacity 0.15s ease;
-}
-
-.profile-header-email {
-  max-width: 100%;
-  font-size: 0.9rem;
-  color: #6b7280;
-
-  white-space: nowrap;       /* una sola línea */
-  overflow: hidden;          /* oculta el excedente */
-  text-overflow: ellipsis;   /* ... */
 }
 
 .tz-btn-primary:active {
@@ -756,10 +623,217 @@
   cursor: not-allowed;
 }
 
+/* ===========================
+   ChangePassword (Login/Register base) - lpw-
+   - iconos SIEMPRE alineados al input
+   - popover tipo mini modal
+=========================== */
 
+/* Campo password */
+.floating-input.lpw-field {
+  position: relative;
+}
+
+/* espacio a la derecha para iconos */
+.floating-input.lpw-field .floating-input__field {
+  padding-right: 96px;
+  height: 46px; /* clave para que no dependa del wrapper */
+}
+
+/* 1 icono (ojo) */
+.floating-input.lpw-field .lpw-icon-btn {
+  position: absolute;
+  right: 12px;
+  top: 0;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  line-height: 1;
+  font-size: 1.15rem;
+  color: #0d6efd;
+  z-index: 6;
+}
+
+/* 2 iconos (info + ojo) */
+.floating-input.lpw-field .lpw-icons {
+  position: absolute;
+  right: 12px;
+  top: 0;
+  height: 46px; /* anclado al input */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 6;
+}
+
+.floating-input.lpw-field .lpw-icon-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* overlay click afuera */
+.lpw-overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  z-index: 10020;
+}
+
+/* popover requisitos */
+.lpw-popover {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 10px);
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+  border-radius: 14px;
+  padding: 14px 16px;
+  z-index: 10030;
+}
+
+.lpw-popover__title {
+  margin: 0 0 10px 0;
+  font-weight: 800;
+  color: #111827;
+}
+
+.lpw-popover__list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.lpw-popover__list li {
+  margin: 5px 0;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.lpw-popover__list li.ok {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+/* Fortaleza */
+.lpw-strength {
+  margin-top: 10px;
+  min-height: 28px;
+}
+
+.lpw-bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.lpw-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.2s ease;
+}
+
+.lpw-meta {
+  margin: 6px 0 0 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* ===========================
+   Animations
+=========================== */
+@keyframes tzToastIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
+
+/* ===== lpw: fix definitivo (info + ojo siempre visibles y bien alineados) ===== */
+
+.floating-input.lpw-field {
+  position: relative;
+}
+
+/* espacio para 2 iconos */
+.floating-input.lpw-field .floating-input__field {
+  padding-right: 96px;
+  height: 46px;
+}
+
+/* contenedor de iconos: siempre manda */
+.floating-input.lpw-field .lpw-icons {
+  position: absolute;
+  right: 12px;
+  top: 0;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 6;
+}
+
+/* dentro del contenedor NO usamos absolute */
+.floating-input.lpw-field .lpw-icons .lpw-icon-btn {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  height: auto !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  line-height: 1;
+  font-size: 1.15rem;
+  color: #0d6efd;
+}
+
+/* botón de un solo icono (los otros campos con solo ojo) */
+.floating-input.lpw-field > .lpw-icon-btn {
+  position: absolute;
+  right: 12px;
+  top: 0;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  line-height: 1;
+  font-size: 1.15rem;
+  color: #0d6efd;
+  z-index: 6;
+}
+
+.floating-input.lpw-field .lpw-icon-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+
+

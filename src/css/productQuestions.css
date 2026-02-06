@@ -1,0 +1,379 @@
+:root {
+  --tz-blue: #0081ea;
+  --tz-red: #d32f2f;
+  --tz-border: #eef2f7;
+  --tz-text: #0f172a;
+  --tz-muted: #64748b;
+}
+
+/* Separador como el resto */
+.pqDivider {
+  height: 1px;
+  background: var(--tz-border);
+  margin: 18px 0 14px;
+}
+
+/* Sección */
+.pqSection {
+  width: 100%;
+  margin-top:18px;
+  border-top:1px solid rgba(15,23,42,.08);
+}
+
+/* Header */
+.pqHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pqTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--tz-text);
+}
+
+.pqLink {
+  border: none;
+  background: transparent;
+  color: var(--tz-blue);
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  white-space: nowrap;
+}
+
+.pqLink i {
+  font-size: 1rem;
+}
+
+/* Form */
+.pqForm {
+  margin-top: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 14px;
+  background: #fff;
+  padding: 12px;
+}
+
+.pqLabel {
+  font-size: 13px;
+  font-weight: 700; /* ✅ menos pesado que títulos */
+  color: var(--tz-muted);
+  margin-bottom: 8px;
+}
+
+/* textarea auto-resize */
+.pqInput {
+  width: 100%;
+  resize: none;
+  overflow: hidden; /* importante para autosize */
+  min-height: 48px;
+
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  padding: 12px;
+
+  font-size: 14px;
+  font-family: Inter;
+  font-weight: 400; /* ✅ texto normal */
+  color: var(--tz-text);
+  outline: none;
+  background: #fff;
+}
+
+.pqInput:focus {
+  border-color: rgba(0, 129, 234, 0.45);
+  box-shadow: 0 0 0 4px rgba(0, 129, 234, 0.12);
+}
+
+.pqActions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Botón */
+.pqBtn {
+  border: none;
+  border-radius: 14px;
+  padding: 15px 20px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+}
+
+.pqBtn--primary {
+  background: var(--tz-blue);
+  color: #fff;
+}
+
+.pqBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pqHint {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--tz-muted);
+}
+
+/* ===== MODAL ===== */
+.pqModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  z-index: 1400;
+}
+
+.pqModal {
+  width: 100%;
+  max-width: 780px;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.28);
+  overflow: hidden;
+}
+
+.pqModalHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(0, 129, 234, 0.06);
+}
+
+.pqModalTitle {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--tz-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pqModalCount {
+  min-width: 28px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(0, 129, 234, 0.14);
+  color: var(--tz-blue);
+  font-size: 0.85rem;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pqModalClose {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.pqModalClose i {
+  font-size: 1.1rem;
+}
+
+/* Cuerpo scrolleable */
+.pqModalBody {
+  max-height: 72vh;
+  overflow: auto;
+  padding: 12px 14px;
+}
+
+.pqEmpty {
+  color: var(--tz-muted);
+  font-size: 0.95rem;
+  padding: 10px 2px;
+}
+
+/* Lista */
+.pqList {
+  display: grid;
+  gap: 12px;
+}
+
+.pqItem {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 14px;
+  padding: 12px;
+  background: #fff;
+}
+
+.pqQ__meta,
+.pqA__meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--tz-muted);
+  font-weight: 700;
+}
+
+.pqQ__who,
+.pqA__who {
+  color: var(--tz-text);
+  font-weight: 900;
+}
+
+.pqQ__sep,
+.pqA__sep {
+  opacity: 0.6;
+}
+
+.pqQ__text {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--tz-text);
+  line-height: 1.45;
+}
+
+/* Respuesta */
+.pqA {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--tz-border);
+}
+
+.pqA__text {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #111827;
+  line-height: 1.45;
+}
+
+.pqA--pending .pqA__pending {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--tz-muted);
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.pqA--pending i {
+  color: var(--tz-blue);
+}
+
+/* Error */
+.pqError {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: rgba(211, 47, 47, 0.08);
+  border: 1px solid rgba(211, 47, 47, 0.18);
+  border-radius: 14px;
+  padding: 12px;
+  color: var(--tz-red);
+}
+
+.pqError i {
+  margin-top: 2px;
+}
+
+.pqError__title {
+  font-weight: 900;
+  color: var(--tz-red);
+}
+
+.pqError__text {
+  margin-top: 2px;
+  color: #7f1d1d;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Skeleton */
+.pqSkel {
+  display: grid;
+  gap: 10px;
+}
+
+.pqSkel__row {
+  height: 76px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.06);
+}
+
+/* ===== PAGINACIÓN ===== */
+.pqPagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+
+  padding: 10px 12px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.pqPageBtn {
+  min-width: 34px;
+  height: 34px;
+
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: #fff;
+
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--tz-text);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  cursor: pointer;
+}
+
+.pqPageBtn i {
+  font-size: 1rem;
+}
+
+.pqPageBtn:hover:not(:disabled) {
+  background: rgba(0, 129, 234, 0.08);
+  border-color: rgba(0, 129, 234, 0.35);
+  color: var(--tz-blue);
+}
+
+.pqPageBtn--active {
+  background: var(--tz-blue);
+  border-color: var(--tz-blue);
+  color: #fff;
+}
+
+.pqPageBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pqPageDots {
+  padding: 0 4px;
+  font-weight: 900;
+  color: var(--tz-muted);
+  user-select: none;
+}

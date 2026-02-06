@@ -1,0 +1,30 @@
+/* src/css/myPurchasesPage.css */
+
+/* ✅ Importante: la page usa coPage + mpPage */
+.mpPage {
+  padding-bottom: 120px; /* deja aire para el StickyActions */
+}
+
+/* Botones del sticky (mismo vibe Checkout/Favoritos) */
+.mpBtn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: #fff;
+  color: #0f172a;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.mpBtn--primary {
+  border-color: rgba(0, 129, 234, 0.45);
+  background: #0081ea;
+  color: #fff;
+}
+
+.mpBtn--secondary {
+  background: #fff;
+  color: #64748b;
+  border: 1px solid rgba(15, 23, 42, 0.15);
+}

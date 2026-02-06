@@ -1,0 +1,173 @@
+/* src/css/checkoutSuccessPage.css */
+.okPage {
+  padding: 12px 0 16px;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.okCard {
+  margin: 12px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  padding: 14px;
+  text-align: center;
+}
+
+.okIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  margin: 4px auto 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 129, 234, 0.10);
+  color: #0081ea;
+  font-size: 1.55rem;
+}
+
+.okIcon--warn {
+  background: rgba(15, 23, 42, 0.06);
+  color: #475569;
+}
+
+.okTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.okSub {
+  margin: 6px 0 0;
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: #64748b;
+}
+
+.okOrder {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(0, 129, 234, 0.10);
+  color: #0081ea;
+  font-weight: 500;
+  margin-left: 6px;
+}
+
+.okInfo {
+  margin-top: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.okInfo__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fff;
+}
+
+.okInfo__row + .okInfo__row {
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.okLabel {
+  color: #64748b;
+  font-weight: 400;
+  font-size: 0.92rem;
+}
+
+.okValue {
+  color: #0f172a;
+  font-weight: 500;
+  font-size: 0.92rem;
+}
+
+/* Bloque factura */
+.okCardInner {
+  margin-top: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 129, 234, 0.18);
+  background: rgba(0, 129, 234, 0.06);
+  padding: 12px;
+  text-align: left;
+}
+
+.okInnerTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.okInnerText {
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.okInnerActions {
+  margin-top: 10px;
+  display: grid;
+  gap: 10px;
+}
+
+.okActions {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+/* Botones */
+.okBtn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: #fff;
+  color: #0f172a;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.okBtn--primary {
+  border-color: rgba(0, 129, 234, 0.45);
+  background: #0081ea;
+  color: #fff;
+}
+
+.okBtn--soft {
+  border-color: rgba(0, 129, 234, 0.35);
+  background: rgba(0, 129, 234, 0.10);
+  color: #0081ea;
+}
+
+.okBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Skeleton */
+.okSkeletonTitle {
+  height: 18px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.06);
+  margin: 6px 0 10px;
+}
+
+.okSkeletonLine {
+  height: 12px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.06);
+  margin: 8px 0;
+}

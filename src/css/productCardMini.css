@@ -1,8 +1,23 @@
 *,
 *::before,
-*::after { box-sizing: border-box; }
+*::after {
+  box-sizing: border-box;
+}
 
+:root{
+  --tz-blue:#0081ea;
+  --tz-text:#0f172a;
+  --tz-muted:#64748b;
+
+  --tz-red:#d32f2f;
+  --tz-red-soft: rgba(211, 47, 47, 0.10);
+
+  --tz-border: rgba(15, 23, 42, 0.08);
+}
+
+/* Card mini (vibe TZ/Checkout) */
 .pcmini{
+  position: relative;
   width: 170px;
   border: 1px solid #eef2f7;
   background: #fff;
@@ -10,36 +25,61 @@
   padding: 10px;
   cursor: pointer;
   text-align: left;
-
   display: grid;
   gap: 10px;
-
   box-shadow: 0 1px 0 rgba(0,0,0,.06);
   transition: transform .12s ease, border-color .15s ease, box-shadow .15s ease;
+  
 }
 
+.pcmini__ribbonClip{
+  position: absolute;
+  inset: 0;
+  overflow: hidden;   /* 👈 SOLO corta el ribbon */
+  pointer-events: none;
+  border-radius: 16px; /* mismo radio que la card */
+  z-index: 3;
+}
+
+
 .pcmini:hover{
-  border-color: rgba(0,129,234,.35);
-  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+  border-color: rgba(0,129,234,.30);
+  box-shadow: 0 12px 26px rgba(2, 6, 23, 0.10);
   transform: translateY(-1px);
 }
 
-.pcmini:active{ transform: translateY(0); }
+.pcmini:active{
+  transform: translateY(0);
+}
 
-.pcmini--out{
-  opacity: .75;
-  filter: grayscale(.4);
+.pcmini:focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(0,129,234,.18), 0 12px 26px rgba(2, 6, 23, 0.10);
+}
+
+/* Si está out lo “apagamos” pero dejamos clickeable */
+.pcmini--out {
+  opacity: 0.7;
+  filter: grayscale(0.4);
+}
+
+
+.pcmini--out:hover {
+  transform: none;
+  box-shadow: 0 1px 0 rgba(0,0,0,.06);
+  border-color: #eef2f7;
 }
 
 .pcmini__imgWrap{
   position: relative;
   width: 100%;
   height: 120px;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
   background: #f9fafb;
   display: grid;
   place-items: center;
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .pcmini__img{
@@ -48,36 +88,82 @@
   object-fit: cover;
 }
 
-.pcmini__ph{
-  color: #9ca3af;
-  font-size: 20px;
+
+
+.pcmini--out .pcmini__name,
+.pcmini--out .pcmini__final {
+  color: #6b7280;
 }
 
+
+/* Badge descuento (rojo, consistente con TZ) */
 .pcmini__badge{
   position: absolute;
   top: 8px;
   left: 8px;
-  background: rgba(0,129,234,.12);
-  color: #0081ea;
+
+  background: var(--tz-red-soft);
+  color: var(--tz-red);
+  border: 1px solid rgba(211, 47, 47, 0.25);
+
   font-weight: 900;
   font-size: 11px;
   padding: 6px 8px;
   border-radius: 999px;
+  line-height: 1;
 }
 
+.pcmini--out .pcmini__img {
+  filter: grayscale(1) brightness(0.9);
+}
+
+.pcmini--out .pcmini__imgWrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+
+/* Ribbon agotado */
 .pcmini__ribbon{
   position: absolute;
-  top: 12px;
-  right: -38px;
-  transform: rotate(35deg);
-  background: #dc2626;
-  color: #fff;
-  padding: 6px 50px;
+  z-index: 5;
+
+  /* ✅ anclado a la CARD */
+  top: 45px;
+  left: -60px;
+  background: transparent;
+
+  /* ✅ misma inclinación que tu mini original (35deg) */
+  transform: translateY(-50%) rotate(-35deg);
+
+  width: 190px;
+  text-align: center;
+
+  background: rgba(211, 47, 47, 0.10);
+  color: #d32f2f;
+
   font-weight: 900;
   font-size: 11px;
-  letter-spacing: .4px;
+  letter-spacing: .6px;
+
+  border-top: 2px solid rgba(211, 47, 47, 0.75);
+  border-bottom: 2px solid rgba(211, 47, 47, 0.75);
+
+  padding: 4px 0;
+  pointer-events: none;
+  
 }
 
+
+.pcmini--out .pcmini__name,
+.pcmini--out .pcmini__final {
+  color: #6b7280;
+}
+
+
+/* Info */
 .pcmini__info{
   display: grid;
   gap: 8px;
@@ -85,8 +171,8 @@
 
 .pcmini__name{
   font-size: 12px;
-  font-weight: 950;
-  color: #111827;
+  font-weight: 800;
+  color: var(--tz-text);
   line-height: 1.2;
 
   display: -webkit-box;
@@ -95,6 +181,7 @@
   overflow: hidden;
 }
 
+/* Precios */
 .pcmini__prices{
   display: grid;
   gap: 2px;
@@ -102,19 +189,19 @@
 
 .pcmini__old{
   font-size: 11px;
-  font-weight: 800;
-  color: #6b7280;
+  font-weight: 700;
+  color: var(--tz-muted);
   text-decoration: line-through;
+  min-height: 1em; /* reserva espacio */
 }
 
 .pcmini__final{
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 900;
   color: #111827;
   white-space: nowrap;
 }
 
-/* el final en rojo cuando hay descuento */
-.pcmini__prices .pcmini__final{
-  color: #dc2626;
+.pcmini__final--deal{
+  color: var(--tz-red);
 }

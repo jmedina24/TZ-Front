@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useLayoutEffect, useState } from "react";
-import {  NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import "../css/menu.css";
 import MenuSearchLive from "../subComponents/MenuSearchLive";
 
@@ -20,6 +20,10 @@ export default function Menu({
   onLogout,
   user,
   categories = [],
+
+  // ✅ NUEVO: contadores
+  cartCount = 0,
+  favoritesCount = 0,
 }) {
   const navigate = useNavigate();
   const routerLocation = useLocation();
@@ -95,11 +99,7 @@ export default function Menu({
         items: [
           { label: "Inicio", icon: "bi-house-door", to: "/" },
           { label: "Buscar producto", icon: "bi-search", panel: PANELS.SEARCH },
-          {
-            label: "Categorías",
-            icon: "bi-list-task",
-            panel: PANELS.CATEGORIES,
-          },
+          { label: "Categorías", icon: "bi-list-task", panel: PANELS.CATEGORIES },
           { label: "Más vendidos", icon: "bi-lightning", to: "/mas-vendidos" },
         ],
       },
@@ -108,11 +108,7 @@ export default function Menu({
         items: [
           { label: "Carrito", icon: "bi-cart", to: "/carrito" },
           { label: "Favoritos", icon: "bi-heart", to: "/favoritos" },
-          {
-            label: "Mis compras",
-            icon: "bi-clock-history",
-            to: "/mis-compras",
-          },
+          { label: "Mis compras", icon: "bi-clock-history", to: "/mis-compras" },
         ],
       },
       {
@@ -128,21 +124,9 @@ export default function Menu({
 
   const adminItems = useMemo(
     () => [
-      {
-        label: "Gestionar ventas",
-        icon: "bi-currency-dollar",
-        to: "/admin/ventas",
-      },
-      {
-        label: "Gestionar productos",
-        icon: "bi-box-seam",
-        to: "/admin/productos",
-      },
-      {
-        label: "Gestionar categorías",
-        icon: "bi-bookmark",
-        to: "/admin/categorias",
-      },
+      { label: "Gestionar ventas", icon: "bi-currency-dollar", to: "/admin/ventas" },
+      { label: "Gestionar productos", icon: "bi-box-seam", to: "/admin/productos" },
+      { label: "Gestionar categorías", icon: "bi-bookmark", to: "/admin/categorias" },
       { label: "Gestionar usuarios", icon: "bi-people", to: "/admin/usuarios" },
     ],
     []
@@ -200,6 +184,13 @@ export default function Menu({
     flex: panelsWidth ? `0 0 ${panelsWidth}px` : "0 0 100%",
   };
 
+  // ✅ helper badge count por label
+  const getBadgeForLabel = (label) => {
+    if (label === "Carrito") return cartCount > 0 ? cartCount : null;
+    if (label === "Favoritos") return favoritesCount > 0 ? favoritesCount : null;
+    return null;
+  };
+
   return (
     <>
       {isOpen && <div className="menu__overlay" onClick={closeAll} />}
@@ -247,17 +238,13 @@ export default function Menu({
                   {isLoggedIn ? fullName || "Mi cuenta" : "Iniciar sesión"}
                 </span>
                 <span className="menu__account-subtitle">
-                  {isLoggedIn
-                    ? "Administrar cuenta"
-                    : "Toca para iniciar sesión"}
+                  {isLoggedIn ? "Administrar cuenta" : "Toca para iniciar sesión"}
                 </span>
               </div>
 
               {isLoggedIn && (
                 <i
-                  className={`bi bi-chevron-${
-                    isAccountMenuOpen ? "up" : "down"
-                  } menu__account-arrow`}
+                  className={`bi bi-chevron-${isAccountMenuOpen ? "up" : "down"} menu__account-arrow`}
                 />
               )}
             </button>
@@ -268,16 +255,10 @@ export default function Menu({
                 className="menu__account-dropdown"
                 role="menu"
               >
-                <button
-                  className="menu__account-option"
-                  onClick={handleGoToProfile}
-                >
+                <button className="menu__account-option" onClick={handleGoToProfile}>
                   Administrar perfil
                 </button>
-                <button
-                  className="menu__account-option"
-                  onClick={handleLogoutClick}
-                >
+                <button className="menu__account-option" onClick={handleLogoutClick}>
                   Cerrar sesión
                 </button>
               </div>
@@ -298,6 +279,8 @@ export default function Menu({
                         <h5 className="menu__section-title">{section.title}</h5>
 
                         {section.items.map((it) => {
+                          const badge = getBadgeForLabel(it.label);
+
                           if (it.panel) {
                             return (
                               <button
@@ -307,7 +290,7 @@ export default function Menu({
                                 onClick={() => openPanel(it.panel)}
                               >
                                 <i className={`bi ${it.icon}`} />
-                                {it.label}
+                                <span className="menu__btn-label">{it.label}</span>
                                 <i className="bi bi-chevron-right menu__rightchev" />
                               </button>
                             );
@@ -317,15 +300,20 @@ export default function Menu({
                             <NavLink
                               key={it.label}
                               className={({ isActive }) =>
-                                `menu__btn ${
-                                  isActive ? "menu__btn--active" : ""
-                                }`
+                                `menu__btn ${isActive ? "menu__btn--active" : ""}`
                               }
                               to={it.to}
                               onClick={closeAll}
                             >
                               <i className={`bi ${it.icon}`} />
-                              {it.label}
+                              <span className="menu__btn-label">{it.label}</span>
+
+                              {/* ✅ badge */}
+                              {badge !== null && (
+                                <span className="menu__badge" aria-label={`${it.label}: ${badge}`}>
+                                  {badge}
+                                </span>
+                              )}
                             </NavLink>
                           );
                         })}
@@ -343,11 +331,7 @@ export default function Menu({
                           aria-expanded={isAdminOpen}
                         >
                           <span>Administrador</span>
-                          <i
-                            className={`bi bi-chevron-${
-                              isAdminOpen ? "up" : "down"
-                            }`}
-                          />
+                          <i className={`bi bi-chevron-${isAdminOpen ? "up" : "down"}`} />
                         </button>
 
                         {isAdminOpen && (
@@ -356,9 +340,7 @@ export default function Menu({
                               <NavLink
                                 key={it.label}
                                 className={({ isActive }) =>
-                                  `menu__btn menu__btn--sub ${
-                                    isActive ? "menu__btn--active" : ""
-                                  }`
+                                  `menu__btn menu__btn--sub ${isActive ? "menu__btn--active" : ""}`
                                 }
                                 to={it.to}
                                 onClick={closeAll}
@@ -376,7 +358,7 @@ export default function Menu({
               </div>
             </div>
 
-            {/* SEARCH ✅ (IMPORTANTE: style={panelStyle} + scroll wrapper) */}
+            {/* SEARCH */}
             <div className="menu__panel" style={panelStyle}>
               <div className="menu__panel-scroll">
                 <div className="menu__panel-header">
@@ -501,3 +483,4 @@ export default function Menu({
     </>
   );
 }
+

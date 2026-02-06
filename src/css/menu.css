@@ -466,3 +466,29 @@
   cursor: not-allowed;
   transform: none;
 }
+
+.menu__btn-label {
+  flex: 1;
+  text-align: left;
+}
+
+.menu__badge {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  background: #0f172a;
+  color: #fff;
+}
+
+.menu__badge {
+  background: var(--tz-blue, #0081ea);
+  color: #fff;
+}
+
+

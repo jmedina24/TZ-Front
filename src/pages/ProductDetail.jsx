@@ -1,34 +1,55 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+  useLocation,
+  useOutletContext,
+} from "react-router-dom";
 import "../css/productDetail.css";
+import StickyActions from "../subComponents/StickyActions";
 import ProductCardMini from "../subComponents/ProductCardMini";
 import { cartService } from "../services/cartService";
+import ProductQuestions from "../subComponents/ProductQuestions";
+import PaymentMethodsModal from "../subComponents/PaymentMethodsModal";
+
+
 
 const API_BASE_URL = "http://localhost:3977";
 const API_PREFIX = "/api/v1";
 
-function formatPriceUYU(n) {
-  const value = Number(n || 0);
-  return value.toLocaleString("es-UY", { style: "currency", currency: "UYU" });
-}
+const moneyUSD = (n) =>
+  new Intl.NumberFormat("es-UY", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(Number(n) || 0);
 
-function calcFinalPrice(price, discountPercent) {
+const calcFinalPrice = (price, discountPercent) => {
   const p = Number(price || 0);
   const d = Number(discountPercent || 0);
   if (!d) return p;
   return Math.round(p * (1 - d / 100));
-}
+};
 
-function isNewByCreatedAt(createdAt, days = 30) {
+const moneyUSD2 = (n) =>
+  new Intl.NumberFormat("es-UY", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(n) || 0);
+
+
+const isNewByCreatedAt = (createdAt, days = 30) => {
   if (!createdAt) return true;
   const created = new Date(createdAt).getTime();
   const now = Date.now();
   const diffDays = (now - created) / (1000 * 60 * 60 * 24);
   return diffDays <= days;
-}
+};
 
-function getAuthHeaders() {
-  const token = localStorage.getItem("token"); // 👈 ajustá si tu key es otra
+function getAuthHeadersFromLocalStorage() {
+  const token = localStorage.getItem("token");
   if (!token) return null;
   return {
     Authorization: `Bearer ${token}`,
@@ -36,10 +57,26 @@ function getAuthHeaders() {
   };
 }
 
-export default function ProductDetail({ categories = [] }) {
+function lockBodyScroll(lock) {
+  const body = document.body;
+  if (!body) return;
+  if (lock) {
+    body.dataset.prevOverflow = body.style.overflow || "";
+    body.style.overflow = "hidden";
+  } else {
+    body.style.overflow = body.dataset.prevOverflow || "";
+    delete body.dataset.prevOverflow;
+  }
+}
+
+export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const outlet = useOutletContext?.() || {};
+  const categories = outlet.categories || [];
+  const showToastGlobal = outlet.showToast;
 
   const [product, setProduct] = useState(null);
   const [similar, setSimilar] = useState([]);
@@ -52,27 +89,41 @@ export default function ProductDetail({ categories = [] }) {
   const [isFav, setIsFav] = useState(false);
   const [favBusy, setFavBusy] = useState(false);
 
-  // toast local (simple)
-  const [toast, setToast] = useState({ show: false, msg: "", type: "success" });
+  // toast local (fallback si no hay showToast en layout)
+  const [toast, setToast] = useState({
+    show: false,
+    msg: "",
+    type: "success",
+  });
   const toastTimerRef = useRef(null);
 
   const showToast = (msg, type = "success") => {
+    if (typeof showToastGlobal === "function") {
+      showToastGlobal(msg, type);
+      return;
+    }
     setToast({ show: true, msg, type });
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    toastTimerRef.current = setTimeout(() => {
-      setToast((t) => ({ ...t, show: false }));
-    }, 2200);
+    toastTimerRef.current = setTimeout(
+      () => setToast((t) => ({ ...t, show: false })),
+      2200
+    );
   };
 
   useEffect(() => {
-    return () => {
-      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    };
+    return () => toastTimerRef.current && clearTimeout(toastTimerRef.current);
   }, []);
 
-  // gallery
+  // ====== Gallery main ======
   const galleryRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  // ====== Lightbox ======
+  const [lbOpen, setLbOpen] = useState(false);
+  const lbRef = useRef(null);
+  const [lbIndex, setLbIndex] = useState(0);
+  const [payOpen, setPayOpen] = useState(false);
+
 
   const name = useMemo(() => {
     if (!product) return "";
@@ -80,12 +131,22 @@ export default function ProductDetail({ categories = [] }) {
   }, [product]);
 
   const basePrice = product?.price ?? 0;
-  const discount = product?.discount_percentaje ?? 0;
-  const hasDiscount = Number(discount) > 0;
+  const discount = Number(product?.discount_percentaje ?? 0);
+  const hasDiscount = discount > 0;
+
   const finalPrice = useMemo(
     () => calcFinalPrice(basePrice, discount),
     [basePrice, discount]
   );
+
+  const priceToPay = hasDiscount ? finalPrice : basePrice;
+
+  const installments = useMemo(() => {
+    // 12 cuotas sin interés
+    const v = Number(priceToPay) || 0;
+    return v / 12;
+  }, [priceToPay]);
+
 
   const sold = Number(product?.sold || 0);
   const stock = Number(product?.stock || 0);
@@ -93,29 +154,37 @@ export default function ProductDetail({ categories = [] }) {
 
   const isNew = isNewByCreatedAt(product?.createdAt, 30);
 
-  const images = useMemo(() => {
-    if (!product) return [];
+  // ✅ imágenes seguras + fallback placeholder
+  const safeImages = useMemo(() => {
     const arr = [];
-    if (product.cover) arr.push(product.cover);
-    if (Array.isArray(product.images))
+    if (product?.cover) arr.push(product.cover);
+    if (Array.isArray(product?.images))
       product.images.forEach((x) => x && arr.push(x));
-    return [...new Set(arr)];
+
+    const uniq = [...new Set(arr)].filter(Boolean);
+    return uniq.length ? uniq : ["/img/placeholder-product.png"];
   }, [product]);
 
-  const subCategoryName = useMemo(() => {
-    if (!product?.subCategoryId) return "";
-    const subId = product.subCategoryId;
-    for (const cat of categories || []) {
-      const sub = (cat.subcategorias || []).find((s) => s.id === subId);
-      if (sub) return sub.nombre;
-    }
-    return product.subCategoryId;
-  }, [product, categories]);
+  const metaLabel = useMemo(() => {
+    if (!product) return "";
+    const subId = product?.subCategoryId;
+    const catId = product?.categoryId;
 
-  const categoryName = useMemo(() => {
-    if (!product?.categoryId) return "";
-    const cat = (categories || []).find((c) => c.id === product.categoryId);
-    return cat?.nombre || product.categoryId;
+    // subcat
+    if (subId) {
+      for (const cat of categories || []) {
+        const sub = (cat.subcategorias || []).find((s) => s.id === subId);
+        if (sub) return sub.nombre;
+      }
+    }
+
+    // category
+    if (catId) {
+      const cat = (categories || []).find((c) => c.id === catId);
+      return cat?.nombre || catId;
+    }
+
+    return "";
   }, [product, categories]);
 
   const clampQty = (n) => {
@@ -137,15 +206,17 @@ export default function ProductDetail({ categories = [] }) {
       setLoading(true);
       try {
         const res = await fetch(`${API_BASE_URL}${API_PREFIX}/product/${id}`);
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data?.msg || "Error obteniendo producto");
+        const p = data?.product || data; // soporta {product:{}} o {}
         if (!alive) return;
 
-        setProduct(data);
+        setProduct(p || null);
         setQty(1);
         setActiveIndex(0);
       } catch (e) {
         console.error(e);
+        if (alive) setProduct(null);
       } finally {
         if (alive) setLoading(false);
       }
@@ -157,14 +228,14 @@ export default function ProductDetail({ categories = [] }) {
     };
   }, [id]);
 
-  // ✅ al entrar: consultar favoritos en BD y setear corazón
+  // favoritos: consultar
   useEffect(() => {
     let alive = true;
 
     async function loadFavourites() {
       if (!product?._id) return;
 
-      const headers = getAuthHeaders();
+      const headers = getAuthHeadersFromLocalStorage();
       if (!headers) {
         if (alive) setIsFav(false);
         return;
@@ -176,7 +247,7 @@ export default function ProductDetail({ categories = [] }) {
           headers,
         });
 
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         if (!res.ok) return;
 
         const favs = Array.isArray(data?.favorites) ? data.favorites : [];
@@ -203,15 +274,16 @@ export default function ProductDetail({ categories = [] }) {
 
     async function runSimilar() {
       if (!product?.categoryId) return;
+
       try {
         const res = await fetch(`${API_BASE_URL}${API_PREFIX}/product/get`);
-        const data = await res.json();
+        const data = await res.json().catch(() => []);
         if (!res.ok) return;
 
-        const list = (data || [])
-          .filter((p) => p.active !== false)
-          .filter((p) => p._id !== product._id)
-          .filter((p) => p.categoryId === product.categoryId)
+        const list = (Array.isArray(data) ? data : [])
+          .filter((p) => p?.active !== false)
+          .filter((p) => p?._id !== product._id)
+          .filter((p) => p?.categoryId === product.categoryId)
           .slice(0, 12);
 
         if (alive) setSimilar(list);
@@ -226,7 +298,15 @@ export default function ProductDetail({ categories = [] }) {
     };
   }, [product]);
 
-  // gallery activeIndex by scroll
+  // ====== helpers scrollToIndex por ref ======
+  const scrollToIndex = (ref, i) => {
+    const el = ref.current;
+    if (!el) return;
+    const w = el.getBoundingClientRect().width || 1;
+    el.scrollTo({ left: i * w, behavior: "smooth" });
+  };
+
+  // main activeIndex by scroll ✅ (usa safeImages.length)
   useEffect(() => {
     const el = galleryRef.current;
     if (!el) return;
@@ -234,36 +314,84 @@ export default function ProductDetail({ categories = [] }) {
     const onScroll = () => {
       const w = el.getBoundingClientRect().width || 1;
       const idx = Math.round(el.scrollLeft / w);
-      setActiveIndex(Math.max(0, Math.min(idx, images.length - 1)));
+      setActiveIndex(Math.max(0, Math.min(idx, safeImages.length - 1)));
     };
 
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => el.removeEventListener("scroll", onScroll);
-  }, [images.length]);
+  }, [safeImages.length]);
 
-  const scrollToIndex = (i) => {
-    const el = galleryRef.current;
+  // lightbox lbIndex by scroll ✅ (usa safeImages.length)
+  useEffect(() => {
+    const el = lbRef.current;
     if (!el) return;
-    const w = el.getBoundingClientRect().width || 1;
-    el.scrollTo({ left: i * w, behavior: "smooth" });
+
+    const onScroll = () => {
+      const w = el.getBoundingClientRect().width || 1;
+      const idx = Math.round(el.scrollLeft / w);
+      setLbIndex(Math.max(0, Math.min(idx, safeImages.length - 1)));
+    };
+
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [safeImages.length, lbOpen]);
+
+  // open/close lightbox + lock scroll
+  useEffect(() => {
+    lockBodyScroll(lbOpen);
+    return () => lockBodyScroll(false);
+  }, [lbOpen]);
+
+  const openLightbox = () => {
+    if (!safeImages.length) return;
+    setLbIndex(activeIndex);
+    setLbOpen(true);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        scrollToIndex(lbRef, activeIndex);
+      });
+    });
   };
 
-  const galleryPrev = () => scrollToIndex(Math.max(0, activeIndex - 1));
-  const galleryNext = () =>
-    scrollToIndex(Math.min(images.length - 1, activeIndex + 1));
+  const closeLightbox = () => setLbOpen(false);
+
+  const galleryPrev = (e) => {
+    e?.stopPropagation?.();
+    scrollToIndex(galleryRef, Math.max(0, activeIndex - 1));
+  };
+  const galleryNext = (e) => {
+    e?.stopPropagation?.();
+    scrollToIndex(galleryRef, Math.min(safeImages.length - 1, activeIndex + 1));
+  };
 
   const canGalleryLeft = activeIndex > 0;
   const canGalleryRight =
-    images.length > 0 ? activeIndex < images.length - 1 : false;
+    safeImages.length > 0 ? activeIndex < safeImages.length - 1 : false;
 
-  // ✅ toggle fav contra BD
+  const handleBack = () => {
+    const from = location.state?.from;
+    const msearch = location.state?.msearch;
+
+    if (from) {
+      navigate(from, { state: { msearch } });
+      return;
+    }
+    if (window.history.length <= 1) {
+      navigate("/");
+      return;
+    }
+    navigate(-1);
+  };
+
+  // toggle fav
   const toggleFav = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (!product?._id) return;
 
-    const headers = getAuthHeaders();
+    const headers = getAuthHeadersFromLocalStorage();
     if (!headers) {
       showToast("Iniciá sesión para usar favoritos", "warning");
       return;
@@ -279,7 +407,7 @@ export default function ProductDetail({ categories = [] }) {
           headers,
           body: JSON.stringify({ productId: product._id }),
         });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         if (!res.ok)
           throw new Error(data?.msg || "No se pudo agregar a favoritos");
 
@@ -290,31 +418,30 @@ export default function ProductDetail({ categories = [] }) {
           `${API_BASE_URL}${API_PREFIX}/user/favorites/${product._id}`,
           { method: "DELETE", headers }
         );
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         if (!res.ok)
           throw new Error(data?.msg || "No se pudo quitar de favoritos");
 
         setIsFav(false);
-        showToast("Se ha quitado el producto de favoritos ✅", "success");
+        showToast("Se quitó de favoritos ✅", "success");
       }
     } catch (err) {
       console.error(err);
-      showToast(err.message || "Ocurrió un error", "error");
+      showToast(err?.message || "Ocurrió un error", "error");
     } finally {
       setFavBusy(false);
     }
   };
 
-  // ✅ carrito híbrido (suma cantidades si existe)
+  // cart add
   const addToCart = async () => {
     if (!product || isOut) return;
-
     try {
       const q = clampQty(qty);
       await cartService.add(product._id, q);
       showToast(`Agregado al carrito (${q}) ✅`, "success");
     } catch (e) {
-      showToast(e.message || "No se pudo agregar al carrito", "error");
+      showToast(e?.message || "No se pudo agregar al carrito", "error");
     }
   };
 
@@ -323,96 +450,97 @@ export default function ProductDetail({ categories = [] }) {
 
   if (loading) {
     return (
-      <div className="pd__page">
-        <div className="pd__card pd__skeleton" />
-        <div className="pd__card pd__skeleton" />
-      </div>
+      <section className="pdPage">
+        <div className="pdSkeleton" />
+        <div className="pdSkeleton" />
+      </section>
     );
   }
 
   if (!product) {
     return (
-      <div className="pd__page">
-        <div className="pd__card">
-          <h3>No se pudo cargar el producto</h3>
+      <section className="pdPage">
+        <div className="pdWrap">
+          <div className="pdEmpty">
+            <h3 className="pdEmpty__title">No se pudo cargar el producto</h3>
+            <p className="pdEmpty__text">Probá volver al inicio y reintentar.</p>
+            <button
+              className="pdBtn pdBtn--primary"
+              onClick={() => navigate("/")}
+            >
+              Volver al inicio
+            </button>
+          </div>
+        </div>
+
+        <StickyActions>
           <button
-            className="pd__btn pd__btn--primary"
+            className="pdStickyBtn pdStickyBtn--secondary"
+            onClick={handleBack}
+          >
+            Volver
+          </button>
+          <button
+            className="pdStickyBtn pdStickyBtn--primary"
             onClick={() => navigate("/")}
           >
             Volver al inicio
           </button>
-        </div>
-      </div>
+        </StickyActions>
+      </section>
     );
   }
 
-  const handleBack = () => {
-    const from = location.state?.from;
-    const msearch = location.state?.msearch;
-
-    if (from) {
-      navigate(from, { state: { msearch } });
-      return;
-    }
-
-    // fallback seguro si no hay historial
-    if (window.history.length <= 1) {
-      navigate("/");
-      return;
-    }
-
-    navigate(-1);
-  };
-
   return (
-    <div className="pd__page">
-      <button type="button" className="pd-back" onClick={handleBack}>
-        <i className="bi bi-arrow-left"></i>
-        Volver
-      </button>
-
-      {/* Toast */}
+    <section className="pdPage">
+      {/* Toast fallback */}
       {toast.show && (
-        <div className={`tz-toast tz-toast--${toast.type}`}>
+        <div className={`tzToast tzToast--${toast.type}`}>
           <i
-            className={`bi ${
-              toast.type === "success"
-                ? "bi-check-circle-fill"
-                : toast.type === "warning"
+            className={`bi ${toast.type === "success"
+              ? "bi-check-circle-fill"
+              : toast.type === "warning"
                 ? "bi-exclamation-triangle-fill"
                 : "bi-x-circle-fill"
-            }`}
+              }`}
           />
-          <div className="tz-toast__text">{toast.msg}</div>
+          <div className="tzToast__text">{toast.msg}</div>
         </div>
       )}
 
-      <div className="pd__card">
-        {/* Meta */}
-        <div className="pd__meta">
-          <span className="pd__meta-new">{isNew ? "Nuevo" : "Nuevo"}</span>
-          <span className="pd__meta-sep">|</span>
-          <span className="pd__meta-sold">+ de {sold} vendidos</span>
+      {/* ✅ TODO ARRIBA DE LA IMAGEN */}
+      <div className="pdWrap">
+        <div className="pdMeta">
+          <span className="pdMeta__pill">{isNew ? "Nuevo" : "Producto"}</span>
+          <span className="pdMeta__sep">|</span>
+          <span className="pdMeta__muted">+ de {sold} vendidos</span>
         </div>
 
-        <div className="pd__subcat">{subCategoryName || categoryName}</div>
-        <h1 className="pd__title">{name}</h1>
+        {metaLabel ? <div className="pdSubcat">{metaLabel}</div> : null}
+        <h1 className="pdH1">{name}</h1>
+      </div>
 
-        {/* Gallery */}
-        <div className="pd__gallery">
+      {/* ✅ GALERÍA FULL WIDTH */}
+      <div className="pdGalleryFull">
+        <div className="pdGallery">
+          {/* ✅ Badge contador de fotos (estilo ML) */}
+          <div className="pdCountBadge" aria-label="Cantidad de fotos">
+            {activeIndex + 1}/{safeImages.length}
+          </div>
+
           <button
-            className={`pd__fav ${isFav ? "pd__fav--on" : ""}`}
+            className={`pdFav ${isFav ? "pdFav--on" : ""}`}
             onClick={toggleFav}
-            aria-label="Agregar a favoritos"
+            aria-label={isFav ? "Quitar de favoritos" : "Agregar a favoritos"}
             type="button"
             disabled={favBusy}
           >
             <i className={`bi ${isFav ? "bi-heart-fill" : "bi-heart"}`} />
           </button>
 
-          {images.length > 1 && canGalleryLeft && (
+          {safeImages.length > 1 && canGalleryLeft && (
             <button
-              className="pd__gArrow pd__gArrow--left"
+              className="pdArrow pdArrow--left"
               type="button"
               onClick={galleryPrev}
               aria-label="Foto anterior"
@@ -421,9 +549,9 @@ export default function ProductDetail({ categories = [] }) {
             </button>
           )}
 
-          {images.length > 1 && canGalleryRight && (
+          {safeImages.length > 1 && canGalleryRight && (
             <button
-              className="pd__gArrow pd__gArrow--right"
+              className="pdArrow pdArrow--right"
               type="button"
               onClick={galleryNext}
               aria-label="Foto siguiente"
@@ -432,63 +560,92 @@ export default function ProductDetail({ categories = [] }) {
             </button>
           )}
 
-          <div className="pd__track" ref={galleryRef}>
-            {images.map((src, i) => (
-              <div className="pd__slide" key={`${src}-${i}`}>
-                <img className="pd__img" src={src} alt={`${name} ${i + 1}`} />
+          {/* ✅ click abre lightbox */}
+          <div
+            className="pdTrack"
+            ref={galleryRef}
+            onClick={openLightbox}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") openLightbox();
+            }}
+            aria-label="Abrir galería en pantalla completa"
+          >
+            {safeImages.map((src, i) => (
+              <div className="pdSlide" key={`${src}-${i}`}>
+                <img className="pdImg" src={src} alt={`${name} ${i + 1}`} />
               </div>
             ))}
           </div>
 
-          {images.length > 1 && (
-            <div className="pd__dots" aria-label="Galería">
-              {images.map((_, i) => (
+          {safeImages.length > 1 && (
+            <div className="pdDots" aria-label="Galería">
+              {safeImages.map((_, i) => (
                 <button
                   key={i}
                   type="button"
-                  className={`pd__dot ${
-                    i === activeIndex ? "pd__dot--on" : ""
-                  }`}
-                  onClick={() => scrollToIndex(i)}
+                  className={`pdDot ${i === activeIndex ? "pdDot--on" : ""}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    scrollToIndex(galleryRef, i);
+                  }}
                   aria-label={`Ir a imagen ${i + 1}`}
                 />
               ))}
             </div>
           )}
         </div>
+      </div>
 
+      {/* ✅ CONTENIDO */}
+      <div className="pdWrap">
         {/* Price */}
-        <div className="pd__priceBlock">
-          {hasDiscount && (
-            <div className="pd__priceOld">{formatPriceUYU(basePrice)}</div>
-          )}
-
-          <div className="pd__priceRow">
-            <div
-              className={`pd__priceFinal ${
-                hasDiscount ? "pd__priceFinal--deal" : ""
-              }`}
-            >
-              {formatPriceUYU(hasDiscount ? finalPrice : basePrice)}
-            </div>
-            {hasDiscount && (
-              <span className="pd__offBadge">-{discount}% OFF</span>
-            )}
+        <div className="pdPriceBlock">
+          <div className="pdPriceOld">
+            {hasDiscount ? moneyUSD(basePrice) : "\u00A0"}
           </div>
 
-          <div className={`pd__stock ${isOut ? "pd__stock--out" : ""}`}>
+          <div className="pdPriceRow">
+            <div className={`pdPriceFinal ${hasDiscount ? "pdPriceFinal--deal" : ""}`}>
+              {moneyUSD(priceToPay)}
+            </div>
+
+            {hasDiscount && <span className="pdOffPill">-{discount}% OFF</span>}
+          </div>
+
+          {/* ✅ cuotas */}
+          {!isOut && (
+            <div className="pdInstallments" aria-label="Financiación">
+              <strong>12 cuotas</strong> de{" "}
+              <span className="pdInstallments__amount">{moneyUSD2(installments)}</span>{" "}
+              <span className="pdInstallments__muted">sin interés</span>
+            </div>
+          )}
+
+          {/* ✅ medios de pago (abre modal) */}
+          <button type="button" className="pdPayLink" onClick={() => setPayOpen(true)}>
+            <i className="bi bi-credit-card" />
+            Medios de pago disponibles
+            <i className="bi bi-chevron-right" />
+          </button>
+
+          <PaymentMethodsModal open={payOpen} onClose={() => setPayOpen(false)} />
+
+
+          <div className={`pdStock ${isOut ? "pdStock--out" : ""}`}>
             {isOut ? "Sin stock" : "Stock disponible"}
           </div>
 
-          {/* ✅ Selector cantidad */}
+          {/* ✅ selector cantidad tipo carrito */}
           {!isOut && (
-            <div className="pd__qtyRow">
-              <span className="pd__qtyLabel">Cantidad</span>
+            <div className="pdQtyCartRow">
+              <span className="pdQtyCartLabel">Cantidad</span>
 
-              <div className="pd__qty">
+              <div className="pdQtyCart" role="group" aria-label="Selector de cantidad">
                 <button
                   type="button"
-                  className="pd__qtyBtn"
+                  className="pdQtyCartBtn"
                   onClick={decQty}
                   aria-label="Restar"
                   disabled={qty <= 1}
@@ -496,19 +653,13 @@ export default function ProductDetail({ categories = [] }) {
                   <i className="bi bi-dash" />
                 </button>
 
-                <input
-                  className="pd__qtyInput"
-                  value={qty}
-                  onChange={(e) =>
-                    setQty(clampQty(e.target.value.replace(/[^\d]/g, "")))
-                  }
-                  inputMode="numeric"
-                  aria-label="Cantidad"
-                />
+                <div className="pdQtyCartValue" aria-label={`Cantidad seleccionada ${qty}`}>
+                  {qty}
+                </div>
 
                 <button
                   type="button"
-                  className="pd__qtyBtn"
+                  className="pdQtyCartBtn"
                   onClick={incQty}
                   aria-label="Sumar"
                   disabled={stock > 0 && qty >= stock}
@@ -517,12 +668,12 @@ export default function ProductDetail({ categories = [] }) {
                 </button>
               </div>
 
-              <span className="pd__qtyHint">Máx: {stock}</span>
+              <span className="pdQtyCartHint">Máx: {stock}</span>
             </div>
           )}
 
           <button
-            className="pd__btn pd__btn--primary"
+            className="pdBtn pdBtn--primary"
             onClick={addToCart}
             disabled={isOut}
             type="button"
@@ -532,8 +683,8 @@ export default function ProductDetail({ categories = [] }) {
           </button>
 
           {/* Policies */}
-          <div className="pd__policies">
-            <div className="pd__policy">
+          <div className="pdPolicies">
+            <div className="pdPolicy">
               <i className="bi bi-arrow-counterclockwise" />
               <div>
                 <strong>Devolución</strong>
@@ -541,7 +692,7 @@ export default function ProductDetail({ categories = [] }) {
               </div>
             </div>
 
-            <div className="pd__policy">
+            <div className="pdPolicy">
               <i className="bi bi-shield-check" />
               <div>
                 <strong>Compra protegida</strong>
@@ -549,7 +700,7 @@ export default function ProductDetail({ categories = [] }) {
               </div>
             </div>
 
-            <div className="pd__policy">
+            <div className="pdPolicy">
               <i className="bi bi-truck" />
               <div>
                 <strong>Envíos</strong>
@@ -560,17 +711,23 @@ export default function ProductDetail({ categories = [] }) {
         </div>
 
         {/* Description */}
-        <div className="pd__section">
-          <h3 className="pd__sectionTitle">Descripción</h3>
-          <p className="pd__desc">{product.description}</p>
+        <div className="pdSection">
+          <h3 className="pdSectionTitle">Descripción</h3>
+          <p className="pdDesc">{product.description}</p>
         </div>
 
+
+
+        <ProductQuestions productId={product._id} />
+
+
+
         {/* Similar */}
-        <div className="pd__section">
-          <div className="pd__sectionHead">
-            <h3 className="pd__sectionTitle">Productos similares</h3>
+        <div className="pdSection">
+          <div className="pdSectionHead">
+            <h3 className="pdSectionTitle">Productos similares</h3>
             <button
-              className="pd__linkBtn"
+              className="pdLinkBtn"
               type="button"
               onClick={() => navigate(`/categorias/${product.categoryId}`)}
             >
@@ -579,11 +736,11 @@ export default function ProductDetail({ categories = [] }) {
           </div>
 
           {similar.length === 0 ? (
-            <div className="pd__muted">
+            <div className="pdMuted">
               No encontramos productos similares por ahora.
             </div>
           ) : (
-            <div className="pd__carousel" aria-label="Productos similares">
+            <div className="pdCarousel" aria-label="Productos similares">
               {similar.map((p) => (
                 <ProductCardMini
                   key={p._id}
@@ -595,6 +752,76 @@ export default function ProductDetail({ categories = [] }) {
           )}
         </div>
       </div>
-    </div>
+
+      {/* ✅ Lightbox pantalla completa */}
+      {lbOpen && (
+        <div
+          className="pdLb"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Galería en pantalla completa"
+          onClick={closeLightbox}
+        >
+          <div className="pdLb__top" onClick={(e) => e.stopPropagation()}>
+            <div className="pdLb__count">
+              {lbIndex + 1}/{safeImages.length}
+            </div>
+
+            <button
+              className="pdLb__close"
+              type="button"
+              onClick={closeLightbox}
+              aria-label="Cerrar"
+            >
+              <i className="bi bi-x-lg" />
+            </button>
+          </div>
+
+          <div
+            className="pdLb__track"
+            ref={lbRef}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {safeImages.map((src, i) => (
+              <div className="pdLb__slide" key={`${src}-lb-${i}`}>
+                <img className="pdLb__img" src={src} alt={`${name} ${i + 1}`} />
+              </div>
+            ))}
+          </div>
+
+          {safeImages.length > 1 && (
+            <div className="pdLb__dots" onClick={(e) => e.stopPropagation()}>
+              {safeImages.map((_, i) => (
+                <button
+                  key={`lb-dot-${i}`}
+                  className={`pdLb__dot ${i === lbIndex ? "pdLb__dot--on" : ""
+                    }`}
+                  type="button"
+                  onClick={() => scrollToIndex(lbRef, i)}
+                  aria-label={`Ir a imagen ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ✅ Sticky bottom */}
+      <StickyActions>
+        <button
+          className="pdStickyBtn pdStickyBtn--secondary"
+          onClick={handleBack}
+        >
+          Volver
+        </button>
+
+        <button
+          className="pdStickyBtn pdStickyBtn--primary"
+          onClick={() => navigate("/")}
+        >
+          Volver al inicio
+        </button>
+      </StickyActions>
+    </section>
   );
 }
