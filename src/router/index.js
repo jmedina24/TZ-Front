@@ -14,6 +14,7 @@ import CheckoutSuccessPage from "../pages/CheckoutSuccessPage";
 import MyPurchasesPage from "../pages/MyPurchasesPage";
 import PurchaseDetailPage from "../pages/PurchaseDetailPage";
 import CategoryPage from "../pages/CategoryPage";
+import NotificationsPage from "../pages/NotificationsPage";
 
 export const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ export const router = createBrowserRouter([
       {
         path: "categorias/:categoryId",
         element: <CategoryPage />,
+      },
+      {
+        path: "notifications",
+        element: <NotificationsPage />,
       },
     ],
   },

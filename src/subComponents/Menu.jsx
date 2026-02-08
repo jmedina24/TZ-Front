@@ -108,7 +108,9 @@ export default function Menu({
         items: [
           { label: "Carrito", icon: "bi-cart", to: "/carrito" },
           { label: "Favoritos", icon: "bi-heart", to: "/favoritos" },
+          { label: "Notificaciones", icon: "bi bi-bell", to: "/notifications" },
           { label: "Mis compras", icon: "bi-clock-history", to: "/mis-compras" },
+
         ],
       },
       {
@@ -135,14 +137,14 @@ export default function Menu({
   const effectiveCategories = categories?.length
     ? categories
     : [
-        {
-          id: "perifericos",
-          nombre: "Periféricos",
-          slug: "perifericos",
-          icono: "bi-keyboard",
-          subcategorias: [{ id: "mouse", nombre: "Mouse", slug: "mouse" }],
-        },
-      ];
+      {
+        id: "perifericos",
+        nombre: "Periféricos",
+        slug: "perifericos",
+        icono: "bi-keyboard",
+        subcategorias: [{ id: "mouse", nombre: "Mouse", slug: "mouse" }],
+      },
+    ];
 
   const openPanel = (p) => {
     setIsAccountMenuOpen(false);
@@ -165,10 +167,10 @@ export default function Menu({
     panel === PANELS.MAIN
       ? 0
       : panel === PANELS.SEARCH
-      ? 1
-      : panel === PANELS.CATEGORIES
-      ? 2
-      : 3;
+        ? 1
+        : panel === PANELS.CATEGORIES
+          ? 2
+          : 3;
 
   // ✅ track y panels en px exactos
   const trackStyle = {
